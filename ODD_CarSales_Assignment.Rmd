@@ -29,10 +29,10 @@ library(zoo)
 
 
 ```{r readRDS}
-sales_2016 <- readRDS("sales_2016.rds")
-sales_2017 <- readRDS("sales_2017.rds")
-sales_2018 <- readRDS("sales_2018.rds")
-sales_2019 <- readRDS("sales_2019.rds")
+sales_2016 <- readRDS(url("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/sales_2016.rds?raw=true"))
+sales_2017 <- readRDS(url("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/sales_2017.rds?raw=true"))
+sales_2018 <- readRDS(url("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/sales_2018.rds?raw=true"))
+sales_2019 <- readRDS(url("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/sales_2019.rds?raw=true"))
 ```
 
 ```{r combined_sales}
