@@ -1,0 +1,196 @@
+---
+title: "ODD Car Sales Assignment"
+author:
+      - _Anılcan_ _Atik_
+      - _Dost_ _Karaahmetli_
+      - _Kutay_ _Akalın_
+      - _Tunahan_ _Kılıç_
+      
+date: "November 5th, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## ODD Dataset
+
+This is a worksheet of ODD Assignment.The dataset for this project includes car sales numbers from the beginning of 2016 through September 2019.
+
+## Preparing and Cleaning Datasets 
+We begin the project by reading the excel files that we download from the ODD website. For sales_2018, data gathering and celaning code given: (for all years, same code structure was used)
+
+
+
+```{r warning=FALSE,message=FALSE}
+
+#library(tidyverse)
+#library(readxl)
+
+
+#2018 Sales Data#
+
+#jan_2018<-read_excel("2018.01.xlsx",skip=7,col_names=FALSE)
+#feb_2018<-read_excel("2018.02.xlsx",skip=7,col_names=FALSE)
+#mar_2018<-read_excel("2018.03.xlsx",skip=7,col_names=FALSE)
+#apr_2018<-read_excel("2018.04.xlsx",skip=7,col_names=FALSE)
+#may_2018<-read_excel("2018.05.xlsx",skip=7,col_names=FALSE)
+#jun_2018<-read_excel("2018.06.xlsx",skip=7,col_names=FALSE)
+#jul_2018<-read_excel("2018.07.xlsx",skip=7,col_names=FALSE)
+#aug_2018<-read_excel("2018.08.xlsx",skip=7,col_names=FALSE)
+#sep_2018<-read_excel("2018.09.xlsx",skip=7,col_names=FALSE)
+#oct_2018<-ead_excel("2018.10.xlsx",skip=7,col_names=FALSE)
+#nov_2018<-read_excel("2018.11.xlsx",skip=7,col_names=FALSE)
+#dec_2018<-read_excel("2018.12.xlsx",skip=7,col_names=FALSE)
+
+#Slicing unnecessary rows from data
+
+#jan_2018<-jan_2018%>%slice(-c(44,45))
+#feb_2018<-feb_2018%>%slice(-c(44,45))
+#mar_2018<-mar_2018%>%slice(-c(44,45))
+#apr_2018<-apr_2018%>%slice(-c(43,44))
+#may_2018<-may_2018%>%slice(-c(43,44))
+#jun_2018<-jun_2018%>%slice(-c(43,44))
+#jul_2018<-jul_2018%>%slice(-c(43,44))
+#aug_2018<-aug_2018%>%slice(-c(43,44))
+#sep_2018<-sep_2018%>%slice(-c(43,44))
+#oct_2018<-oct_2018%>%slice(-c(43,44))
+#nov_2018<-nov_2018%>%slice(-c(43,44))
+#dec_2018<-dec_2018%>%slice(-c(43,44))
+
+#Changing column names#
+
+#dfs<-c("jan_2018","feb_2018","mar_2018","apr_2018","may_2018","jun_2018","jul_2018","aug_2018","sep_2018","oct_2018","nov_2018","dec_2018")  
+
+#for(df in dfs) {
+#  df.tmp <- get(df)
+#  names(df.tmp) <- c("brand_name","auto_dom","auto_imp","auto_total","comm_dom",
+#  "comm_imp","comm_total","total_dom","total_imp","total_total") 
+#  assign(df, df.tmp)
+# }
+
+#Creating Month and Year Column#
+
+#jan_2018 <- jan_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 1)
+#feb_2018 <- feb_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 2)
+#mar_2018 <- mar_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 3)
+#apr_2018 <- apr_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 4)
+#may_2018 <- may_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 5)
+#jun_2018 <- jun_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 6)
+#jul_2018 <- jul_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 7)
+#aug_2018 <- aug_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 8)
+#sep_2018 <- sep_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 9)
+#oct_2018 <- oct_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 10)
+#nov_2018 <- nov_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 11)
+#dec_2018 <- dec_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 12)
+
+
+#Combined 2018 Sales Data#
+
+#sales_2018 <- rbind(jan_2018, feb_2018, mar_2018, apr_2018, may_2018, jun_2018, jul_2018, aug_2018, sep_2018, oct_2018, nov_2018, dec_2018)
+
+#saveRDS(sales_2018,file="sales_2018.rds")
+```
+
+
+
+## Merging Datasets
+```{r warning=FALSE,message=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(zoo)
+library(scales)
+library(formattable)
+library(knitr)
+```
+
+
+```{r readRDS}
+sales_2016 <- readRDS(url("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/sales_2016.rds?raw=true"))
+sales_2017 <- readRDS(url("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/sales_2017.rds?raw=true"))
+sales_2018 <- readRDS(url("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/sales_2018.rds?raw=true"))
+sales_2019 <- readRDS(url("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/sales_2019.rds?raw=true"))
+```
+
+```{r combined_sales}
+combined_sales <- rbind(sales_2016, sales_2017, sales_2018, sales_2019)
+combined_sales <- combined_sales %>% filter(!str_detect(brand_name,"ODD"))
+combined_sales$brand_name <- str_replace_all(combined_sales$brand_name,"ASTON MARTÄ°N","ASTON MARTIN")
+```
+
+We should create the date column for analysis
+```{r date column}
+combined_sales$YearMonth <- as.Date(as.yearmon(paste(combined_sales$year, " ", combined_sales$month), "%Y %m"))
+print(combined_sales, width = Inf)
+```
+
+
+### Monthly Car Sales from 2016 to September 2019 by Brand Names
+```{r monthly car sales by brand}
+sales_byperiod <- combined_sales %>% group_by(YearMonth, brand_name) %>% summarise(total_sales = sum(total_total)) %>% arrange(desc(total_sales)) %>% top_n(1)
+sales_byperiod
+ggplot(sales_byperiod, aes(x = YearMonth, y = total_sales, fill = brand_name)) + geom_bar(stat = "identity") + labs(x = "Months", y = "Total Car Sales", fill = "Brand Name")
+```
+
+### Total Monthly Sales in Turkey
+```{r message = FALSE}
+monthly_sales <- combined_sales %>% group_by(YearMonth) %>% summarise(total_sales = sum(total_total)) %>% arrange(desc(total_sales))
+monthly_sales
+ggplot(monthly_sales, aes(x = YearMonth, y = total_sales, color = total_sales)) + geom_point() + geom_smooth() + labs(x = "Months", y = "Total Car Sales", color = "Total Car Sales")
+```
+
+### Total Number of Car Sales by Brand from 2016 to September 2019
+```{r message = FALSE, fig.height=10, fig.width=15, fig.asp= .60}
+total_car_numbers <- combined_sales %>% group_by(brand_name) %>% summarise(total_total = sum(total_total)) %>% arrange(desc(total_total))
+total_car_numbers
+ggplot(total_car_numbers, aes(x = brand_name, y = total_total, size = total_total, color = brand_name)) + geom_point() + theme(axis.text.x = element_text(angle = 90)) + labs(x = "Brand Name", y = "Total Car Sales", color = "Brand Name", size = "")
+```
+
+### Ratio of the Number of Cars in Domestic Status to the Total Number of Cars per Month
+```{r message = FALSE}
+domestic_percentage <- combined_sales %>% group_by(YearMonth) %>% summarise(total_dom = sum(total_dom), total_total = sum(total_total)) %>% mutate(percent_total_dom = total_dom/total_total) %>% arrange(desc(percent_total_dom))
+domestic_percentage
+ggplot(domestic_percentage, aes(x = YearMonth, y = percent_total_dom, size = percent_total_dom, color = percent_total_dom)) + geom_point() + scale_color_gradientn(colours = rainbow(2)) + labs(x = "Months", y = "Percentage of Domestic Cars in Total", color = "", size="")
+```
+
+### Top 5 Market Share Percentage 2016-2019
+```{r message = FALSE}
+top5_market_share <- combined_sales %>% group_by(year, brand_name) %>% summarise(total_sales = sum(total_total)) %>% mutate(percent = total_sales / sum(total_sales)) %>% top_n(5, percent)
+top5_market_share
+ggplot(top5_market_share, aes(x = year, y = percent, color = brand_name)) + geom_point() + geom_line()
+```
+
+### Top 20 Firms Holding the Market Share between 2016-2019
+```{r message = FALSE}
+combined_sales$time<-as.Date(as.yearmon(paste(combined_sales$year, " ", combined_sales$month), "%Y %m"))
+M_S<-combined_sales%>%select(brand_name,year,total_total)%>%group_by(brand_name)%>%mutate(t_total=sum(total_total))
+M_S1<-M_S[!duplicated(M_S$brand_name), ]
+sum_total<-sum(M_S1$t_total)
+M_S2<-M_S1%>%arrange(desc(t_total))%>%head(20)
+ggplot(M_S2,aes(x=reorder(brand_name,-t_total),y=t_total/sum_total,color=brand_name))+geom_col(aes(fill=brand_name))+theme(axis.text.x = element_text(angle = 90, hjust = 1))+labs(title = "2016-2019 Total Market Share in Percentage",y="Market Share in Percentage",x="Company Names")
+```
+
+### Total Imported Car Shares of Brands between 2016-2019
+```{r message = FALSE}
+T_I<-combined_sales%>%select(brand_name,total_imp,time)%>%group_by(time)%>% mutate(perc_total_imp = total_imp/sum(total_imp))%>%top_n(10)
+ggplot(T_I,aes(x=time,y=total_imp,color=brand_name))+geom_col(aes(fill=brand_name))+scale_x_date(labels = date_format("%Y %m"))+labs(title = "2016-2019 Total Imports",y="Total Imports",x="Time")
+```
+
+### Total Domestic Car Shares of Brands between 2016-2019
+```{r message = FALSE}
+T_D<-combined_sales%>%select(brand_name,total_dom,time)%>%group_by(time)%>% mutate(perc_total_dom = total_dom/sum(total_dom))%>%top_n(10)  
+ggplot(T_D,aes(x=time,y=total_dom))+geom_col(aes(fill=brand_name))+scale_x_date(labels = date_format("%Y %m"))+labs(title = "2016-2019 Total Domestic",y="Total Domestic",x="Time")
+```
+
+### Total Domestic, Imported Car Sales in Months Beween 2016-2019
+```{r message = FALSE}
+slct_1<-combined_sales %>% group_by(year,month) %>% summarise(sum_dom=sum(total_dom),sum_imp=sum(total_imp),sum_total=sum(total_total),sum_dom) %>% ungroup()
+formattable(slct_1)
+```
+
+### Bar Graph of 4 Year Total Car Sales in Months
+```{r message = FALSE}
+levels_month= c("1","2","3","4","5","6","7","8","9","10","11","12")
+ggplot(slct_1,aes(x=ordered(as.character(month),levels=levels_month),y=sum_total,fill=ordered(year,levels=c("2016","2017","2018","2019")))) +geom_bar(stat="identity",position="dodge") + labs(y="Total Car Sales",x="Months",fill="")
+```
