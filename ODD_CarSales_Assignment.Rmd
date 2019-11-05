@@ -1,0 +1,80 @@
+---
+title: "ODD Car Sales Assignment"
+author:
+      - Anılcan Atik
+      - Dost Karaahmetli
+      - Kutay Akalın
+      - Tunahan Kılıç
+      
+date: "5 Kasım 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## ODD Dataset
+
+This is a worksheet of ODD Assignment.The dataset for this project includes car sales numbers from the beginning of 2016 through September 2019.
+
+## Merging Datasets
+We begin the project by reading the .rds files that we create through the car sales Excels that we download from the ODD website.
+
+```{r warning=FALSE,message=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(zoo)
+```
+
+
+```{r readRDS}
+sales_2016 <- readRDS("sales_2016.rds")
+sales_2017 <- readRDS("sales_2017.rds")
+sales_2018 <- readRDS("sales_2018.rds")
+sales_2019 <- readRDS("sales_2019.rds")
+```
+
+```{r combined_sales}
+combined_sales <- rbind(sales_2016, sales_2017, sales_2018, sales_2019)
+combined_sales <- combined_sales %>% filter(!str_detect(brand_name,"ODD"))
+combined_sales$brand_name <- str_replace_all(combined_sales$brand_name,"ASTON MARTÄ°N","ASTON MARTIN")
+```
+
+We should create the date column for analysis
+```{r date column}
+combined_sales$YearMonth <- as.Date(as.yearmon(paste(combined_sales$year, " ", combined_sales$month), "%Y %m"))
+print(combined_sales, width = Inf)
+```
+
+
+### Monthly car sales from 2016 to September 2019 by brand names
+```{r monthly car sales by brand}
+sales_byperiod <- combined_sales %>% group_by(YearMonth, brand_name) %>% summarise(total_sales = sum(total_total)) %>% arrange(desc(total_sales)) %>% top_n(1)
+sales_byperiod
+ggplot(sales_byperiod, aes(x = YearMonth, y = total_sales, fill = brand_name)) + geom_bar(stat = "identity")
+```
+
+### Total monthly sales in Turkey
+```{r message = FALSE}
+monthly_sales <- combined_sales %>% group_by(YearMonth) %>% summarise(total_sales = sum(total_total)) %>% arrange(desc(total_sales))
+monthly_sales
+ggplot(monthly_sales, aes(x = YearMonth, y = total_sales, color = total_sales)) + geom_point() + geom_smooth()
+```
+
+### Total number of car sales by brand from 2016 to Sep.2019
+```{r message = FALSE, fig.height=10, fig.width=15, fig.asp= .60}
+total_car_numbers <- combined_sales %>% group_by(brand_name) %>% summarise(total_total = sum(total_total)) %>% arrange(desc(total_total))
+total_car_numbers
+ggplot(total_car_numbers, aes(x = brand_name, y = total_total, size = total_total, color = brand_name)) + geom_point() + theme(axis.text.x = element_text(angle = 90))
+```
+
+### Ratio of the number of cars in domestic status to the total number of cars per month
+```{r message = FALSE}
+domestic_percentage <- combined_sales %>% group_by(YearMonth) %>% summarise(total_dom = sum(total_dom), total_total = sum(total_total)) %>% mutate(percent_total_dom = total_dom/total_total) %>% arrange(desc(percent_total_dom))
+domestic_percentage
+ggplot(domestic_percentage, aes(x = YearMonth, y = percent_total_dom, size = percent_total_dom, color = percent_total_dom)) + geom_point() + scale_color_gradientn(colours = rainbow(2))
+```
+
+
+
