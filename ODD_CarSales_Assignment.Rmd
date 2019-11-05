@@ -76,5 +76,11 @@ domestic_percentage
 ggplot(domestic_percentage, aes(x = YearMonth, y = percent_total_dom, size = percent_total_dom, color = percent_total_dom)) + geom_point() + scale_color_gradientn(colours = rainbow(2))
 ```
 
-
+### Top 20 Firms Holding the Market Share between 2016-2019
+```M_S<-combined_sales%>%select(brand_name,year,total_total)%>%group_by(brand_name)%>%mutate(t_total=sum(total_total))
+M_S1<-M_S[!duplicated(M_S$brand_name), ]
+sum_total<-sum(M_S1$t_total)
+M_S2<-M_S1%>%arrange(desc(t_total))%>%head(20)
+ggplot(M_S2,aes(x=reorder(brand_name,-t_total),y=t_total/sum_total,color=brand_name))+geom_col(aes(fill=brand_name))+theme(axis.text.x = element_text(angle = 90, hjust = 1))+labs(title = "2016-2019 Total Market Share in Percentage",y="Market Share in Percentage",x="Company Names")
+```
 
