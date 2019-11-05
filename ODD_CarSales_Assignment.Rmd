@@ -19,16 +19,19 @@ knitr::opts_chunk$set(echo = TRUE)
 This is a worksheet of ODD Assignment.The dataset for this project includes car sales numbers from the beginning of 2016 through September 2019.
 
 ## Merging Datasets
-We begin the project by reading the .rds files that we create through the car sales Excels that we download from the ODD website. For sales_2018, data gathering and celaning code given: (for all years, same code structure was used)
+We begin the project by reading the .rds files that we create through the car sales Excels that we download from the ODD website. For sales_2019, data gathering and celaning code given: (for all years, same code structure was used)
+
 
 ------
+
+```{r}
 library(tidyverse)
 library(readxl)
+```
 
-setwd("C:/ODD_assignment")
-getwd()
 
 #2018 Sales Data
+```{r}
 jan_2018 <- read_excel("2018.01.xlsx", skip=7,col_names=FALSE)
 feb_2018 <- read_excel("2018.02.xlsx", skip=7,col_names=FALSE)
 mar_2018 <- read_excel("2018.03.xlsx", skip=7,col_names=FALSE)
@@ -41,8 +44,10 @@ sep_2018 <- read_excel("2018.09.xlsx", skip=7,col_names=FALSE)
 oct_2018 <- read_excel("2018.10.xlsx", skip=7,col_names=FALSE)
 nov_2018 <- read_excel("2018.11.xlsx", skip=7,col_names=FALSE)
 dec_2018 <- read_excel("2018.12.xlsx", skip=7,col_names=FALSE)
+```
 
 #Slicing unnecessary rows from data
+```{r}
 jan_2018 <- jan_2018 %>% slice(-c(44,45))
 feb_2018 <- feb_2018 %>% slice(-c(44,45))
 mar_2018 <- mar_2018 %>% slice(-c(44,45))
@@ -55,17 +60,22 @@ sep_2018 <- sep_2018 %>% slice(-c(43,44))
 oct_2018 <- oct_2018 %>% slice(-c(43,44))
 nov_2018 <- nov_2018 %>% slice(-c(43,44))
 dec_2018 <- dec_2018 %>% slice(-c(43,44))
+```
 
 #Changing col names
+```{r}
 dfs <- c("jan_2018", "feb_2018", "mar_2018", "apr_2018", "may_2018", "jun_2018", "jul_2018", "aug_2018", "sep_2018", "oct_2018", "nov_2018", "dec_2018")
+
 
 for(df in dfs) {
   df.tmp <- get(df)
   names(df.tmp) <- c("brand_name","auto_dom","auto_imp","auto_total","comm_dom","comm_imp","comm_total","total_dom","total_imp","total_total") 
   assign(df, df.tmp)
 }
+```
 
 #Creating Month and Year Column
+```{r}
 jan_2018 <- jan_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 1)
 feb_2018 <- feb_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 2)
 mar_2018 <- mar_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 3)
@@ -78,14 +88,19 @@ sep_2018 <- sep_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mu
 oct_2018 <- oct_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 10)
 nov_2018 <- nov_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 11)
 dec_2018 <- dec_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 12)
+```
 
 
 #Combined 2018 Sales Data
+```{r}
 sales_2018 <- rbind(jan_2018, feb_2018, mar_2018, apr_2018, may_2018, jun_2018, jul_2018, aug_2018, sep_2018, oct_2018, nov_2018, dec_2018)
 
+
 saveRDS(sales_2018,file="sales_2018.rds")
+```
 
 ------
+
 
 ```{r warning=FALSE,message=FALSE}
 library(tidyverse)
