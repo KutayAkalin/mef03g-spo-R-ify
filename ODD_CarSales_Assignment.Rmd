@@ -1,10 +1,10 @@
 ---
 title: "ODD Car Sales Assignment"
 author:
-      - Anılcan Atik
-      - Dost Karaahmetli
-      - Kutay Akalın
-      - Tunahan Kılıç
+      - _Anılcan_ _Atik_
+      - _Dost_ _Karaahmetli_
+      - _Kutay_ _Akalın_
+      - _Tunahan_ _Kılıç_
       
 date: "November 5th, 2019"
 output: html_document
@@ -18,87 +18,154 @@ knitr::opts_chunk$set(echo = TRUE)
 
 This is a worksheet of ODD Assignment.The dataset for this project includes car sales numbers from the beginning of 2016 through September 2019.
 
-## Merging Datasets
-We begin the project by reading the .rds files that we create through the car sales Excels that we download from the ODD website. For sales_2019, data gathering and celaning code given: (for all years, same code structure was used)
+## Preparing and Cleaning Datasets 
+We begin the project by reading the .rds files that we create through the car sales Excels that we download from the ODD website. For sales_2018, data gathering and celaning code given: (for all years, same code structure was used)
 
 
-------
 
+-----
 library(tidyverse)
+
 library(readxl)
 
-#2018 Sales Data
 
-jan_2018 <- read_excel("2018.01.xlsx", skip=7,col_names=FALSE)
-feb_2018 <- read_excel("2018.02.xlsx", skip=7,col_names=FALSE)
-mar_2018 <- read_excel("2018.03.xlsx", skip=7,col_names=FALSE)
-apr_2018 <- read_excel("2018.04.xlsx", skip=7,col_names=FALSE)
-may_2018 <- read_excel("2018.05.xlsx", skip=7,col_names=FALSE)
-jun_2018 <- read_excel("2018.06.xlsx", skip=7,col_names=FALSE)
-jul_2018 <- read_excel("2018.07.xlsx", skip=7,col_names=FALSE)
-aug_2018 <- read_excel("2018.08.xlsx", skip=7,col_names=FALSE)
-sep_2018 <- read_excel("2018.09.xlsx", skip=7,col_names=FALSE)
-oct_2018 <- read_excel("2018.10.xlsx", skip=7,col_names=FALSE)
-nov_2018 <- read_excel("2018.11.xlsx", skip=7,col_names=FALSE)
-dec_2018 <- read_excel("2018.12.xlsx", skip=7,col_names=FALSE)
+setwd("C:/ODD_assignment")
+
+getwd()
 
 
-#Slicing unnecessary rows from data
+**2018 Sales Data**
 
-jan_2018 <- jan_2018 %>% slice(-c(44,45))
-feb_2018 <- feb_2018 %>% slice(-c(44,45))
-mar_2018 <- mar_2018 %>% slice(-c(44,45))
-apr_2018 <- apr_2018 %>% slice(-c(43,44))
-may_2018 <- may_2018 %>% slice(-c(43,44))
-jun_2018 <- jun_2018 %>% slice(-c(43,44))
-jul_2018 <- jul_2018 %>% slice(-c(43,44))
-aug_2018 <- aug_2018 %>% slice(-c(43,44))
-sep_2018 <- sep_2018 %>% slice(-c(43,44))
-oct_2018 <- oct_2018 %>% slice(-c(43,44))
-nov_2018 <- nov_2018 %>% slice(-c(43,44))
-dec_2018 <- dec_2018 %>% slice(-c(43,44))
+jan_2018<-read_excel("2018.01.xlsx",skip=7,col_names=FALSE)
 
+feb_2018<-read_excel("2018.02.xlsx",skip=7,col_names=FALSE)
 
-#Changing col names
+mar_2018<-read_excel("2018.03.xlsx",skip=7,col_names=FALSE)
 
-dfs <- c("jan_2018", "feb_2018", "mar_2018", "apr_2018", "may_2018", "jun_2018", "jul_2018", "aug_2018", "sep_2018", "oct_2018", "nov_2018", "dec_2018")
+apr_2018<-read_excel("2018.04.xlsx",skip=7,col_names=FALSE)
 
+may_2018<-read_excel("2018.05.xlsx",skip=7,col_names=FALSE)
+
+jun_2018<-read_excel("2018.06.xlsx",skip=7,col_names=FALSE)
+
+jul_2018<-read_excel("2018.07.xlsx",skip=7,col_names=FALSE)
+
+aug_2018<-read_excel("2018.08.xlsx",skip=7,col_names=FALSE)
+
+sep_2018<-read_excel("2018.09.xlsx",skip=7,col_names=FALSE)
+
+oct_2018<-ead_excel("2018.10.xlsx",skip=7,col_names=FALSE)
+
+nov_2018<-read_excel("2018.11.xlsx",skip=7,col_names=FALSE)
+
+dec_2018<-read_excel("2018.12.xlsx",skip=7,col_names=FALSE)
+
+**#Slicing unnecessary rows from data**
+
+jan_2018<-jan_2018%>%slice(-c(44,45))
+
+feb_2018<-feb_2018%>%slice(-c(44,45))
+
+mar_2018<-mar_2018%>%slice(-c(44,45))
+
+apr_2018<-apr_2018%>%slice(-c(43,44))
+
+may_2018<-may_2018%>%slice(-c(43,44))
+
+jun_2018<-jun_2018%>%slice(-c(43,44))
+
+jul_2018<-jul_2018%>%slice(-c(43,44))
+
+aug_2018<-aug_2018%>%slice(-c(43,44))
+
+sep_2018<-sep_2018%>%slice(-c(43,44))
+
+oct_2018<-oct_2018%>%slice(-c(43,44))
+
+nov_2018<-nov_2018%>%slice(-c(43,44))
+
+dec_2018<-dec_2018%>%slice(-c(43,44))
+
+**#Changing col names**
+
+dfs<-c("jan_2018","feb_2018","mar_2018","apr_2018","may_2018","jun_2018","jul_2018","aug_2018","sep_2018","oct_2018","nov_2018","dec_2018")  
 
 for(df in dfs) {
+
   df.tmp <- get(df)
-  names(df.tmp) <- c("brand_name","auto_dom","auto_imp","auto_total","comm_dom","comm_imp","comm_total","total_dom","total_imp","total_total") 
+  
+  names(df.tmp) <- c("brand_name","auto_dom","auto_imp","auto_total","comm_dom",
+  
+  "comm_imp","comm_total","total_dom","total_imp","total_total") 
+  
   assign(df, df.tmp)
+  
 }
 
+**Creating Month and Year Column**
 
-#Creating Month and Year Column
+jan_2018 <- jan_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>%
 
-jan_2018 <- jan_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 1)
-feb_2018 <- feb_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 2)
-mar_2018 <- mar_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 3)
-apr_2018 <- apr_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 4)
-may_2018 <- may_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 5)
-jun_2018 <- jun_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 6)
-jul_2018 <- jul_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 7)
-aug_2018 <- aug_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 8)
-sep_2018 <- sep_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 9)
-oct_2018 <- oct_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 10)
-nov_2018 <- nov_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 11)
-dec_2018 <- dec_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>% mutate(year = 2018, month = 12)
+mutate(year = 2018, month = 1)
+
+feb_2018 <- feb_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>%
+
+mutate(year = 2018, month = 2)
+
+mar_2018 <- mar_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>%
+
+mutate(year = 2018, month = 3)
+
+apr_2018 <- apr_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>%
+
+mutate(year = 2018, month = 4)
+
+may_2018 <- may_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>%
+
+mutate(year = 2018, month = 5)
+
+jun_2018 <- jun_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>%
+
+mutate(year = 2018, month = 6)
+
+jul_2018 <- jul_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>%
+
+mutate(year = 2018, month = 7)
+
+aug_2018 <- aug_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>%
+
+mutate(year = 2018, month = 8)
+
+sep_2018 <- sep_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>%
+
+mutate(year = 2018, month = 9)
+
+oct_2018 <- oct_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>%
+
+mutate(year = 2018, month = 10)
+
+nov_2018 <- nov_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>%
+
+mutate(year = 2018, month = 11)
+
+dec_2018 <- dec_2018 %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.))) %>%
+
+mutate(year = 2018, month = 12)
 
 
+**Combined 2018 Sales Data**
 
-#Combined 2018 Sales Data
+sales_2018 <- rbind(jan_2018, feb_2018, mar_2018, apr_2018, may_2018, jun_2018,
 
-sales_2018 <- rbind(jan_2018, feb_2018, mar_2018, apr_2018, may_2018, jun_2018, jul_2018, aug_2018, sep_2018, oct_2018, nov_2018, dec_2018)
-
+jul_2018, aug_2018, sep_2018, oct_2018, nov_2018, dec_2018)
 
 saveRDS(sales_2018,file="sales_2018.rds")
 
 
-------
+-----
 
 
+## Merging Datasets
 ```{r warning=FALSE,message=FALSE}
 library(tidyverse)
 library(ggplot2)
@@ -180,11 +247,6 @@ T_I<-combined_sales%>%select(brand_name,total_imp,time)%>%group_by(time)%>% muta
 ggplot(T_I,aes(x=time,y=total_imp,color=brand_name))+geom_col(aes(fill=brand_name))+scale_x_date(labels = date_format("%Y %m"))+labs(title = "2016-2019 Total Imports",y="Total Imports",x="Time")
 ```
 
-### Total Domestic Car Shares of Brands between 2016-2019
-```{r message = FALSE}
-T_D<-combined_sales%>%select(brand_name,total_dom,time)%>%group_by(time)%>% mutate(perc_total_dom = total_dom/sum(total_dom))%>%top_n(10)  
-ggplot(k,aes(x=time,y=total_dom))+geom_col(aes(fill=brand_name))+scale_x_date(labels = date_format("%Y %m"))+labs(title = "2016-2019 Total Domestic",y="Total Domestic",x="Time")
-```
 
 ### Total Domestic, Imported Car Sales in Months Beween 2016-2019
 ```{r message = FALSE}
