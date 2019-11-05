@@ -6,7 +6,7 @@ author:
       - Kutay Akalın
       - Tunahan Kılıç
       
-date: "5 Kasım 2019"
+date: "November 5th, 2019"
 output: html_document
 ---
 
