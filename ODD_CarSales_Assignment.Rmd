@@ -85,6 +85,7 @@ top5_market_share <- combined_sales %>% group_by(year, brand_name) %>% summarise
 top5_market_share
 ggplot(top5_market_share, aes(x = year, y = percent, color = brand_name)) + geom_point() + geom_line()
 ```
+
 ### Top 20 Firms Holding the Market Share between 2016-2019
 ```{r message = FALSE}
 combined_sales$time<-as.Date(as.yearmon(paste(combined_sales$year, " ", combined_sales$month), "%Y %m"))
