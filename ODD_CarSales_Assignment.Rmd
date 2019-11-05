@@ -79,13 +79,13 @@ domestic_percentage
 ggplot(domestic_percentage, aes(x = YearMonth, y = percent_total_dom, size = percent_total_dom, color = percent_total_dom)) + geom_point() + scale_color_gradientn(colours = rainbow(2))
 ```
 
-### Top 20 Firms Holding the Market Share between 2016-2019
+### Top 5 Market Share Percentage 2016-2019
 ```{r message = FALSE}
 top5_market_share <- combined_sales %>% group_by(year, brand_name) %>% summarise(total_sales = sum(total_total)) %>% mutate(percent = total_sales / sum(total_sales)) %>% top_n(5, percent)
 top5_market_share
 ggplot(top5_market_share, aes(x = year, y = percent, color = brand_name)) + geom_point() + geom_line()
 ```
-### Top 5 Market Share Percentage 2016-2019
+### Top 20 Firms Holding the Market Share between 2016-2019
 ```{r message = FALSE}
 combined_sales$time<-as.Date(as.yearmon(paste(combined_sales$year, " ", combined_sales$month), "%Y %m"))
 M_S<-combined_sales%>%select(brand_name,year,total_total)%>%group_by(brand_name)%>%mutate(t_total=sum(total_total))
