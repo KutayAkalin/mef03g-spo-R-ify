@@ -101,7 +101,7 @@ T_D<-combined_sales%>%select(brand_name,total_dom,time)%>%group_by(time)%>% muta
 ggplot(k,aes(x=time,y=total_dom))+geom_col(aes(fill=brand_name))+scale_x_date(labels = date_format("%Y %m"))+labs(title = "2016-2019 Total Domestic",y="Total Domestic",x="Time")
 ```
 
-### Total Domasteic, Imported Car Sales in Months Beween 2016-2019
+### Total Domestic, Imported Car Sales in Months Beween 2016-2019
 ```{r message = FALSE}
 
 slct_1<-combined_sales %>% group_by(year,month) %>% summarise(sum_dom=sum(total_dom),sum_imp=sum(total_imp),sum_total=sum(total_total),sum_dom) %>% ungroup()
