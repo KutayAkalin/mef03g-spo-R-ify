@@ -84,3 +84,15 @@ sum_total<-sum(M_S1$t_total)
 M_S2<-M_S1%>%arrange(desc(t_total))%>%head(20)
 ggplot(M_S2,aes(x=reorder(brand_name,-t_total),y=t_total/sum_total,color=brand_name))+geom_col(aes(fill=brand_name))+theme(axis.text.x = element_text(angle = 90, hjust = 1))+labs(title = "2016-2019 Total Market Share in Percentage",y="Market Share in Percentage",x="Company Names")
 ```
+
+### Total Imported Car Shares of Brands between 2016-2019
+```{r message = FALSE}
+T_I<-combined_sales%>%select(brand_name,total_imp,time)%>%group_by(time)%>% mutate(perc_total_imp = total_imp/sum(total_imp))%>%top_n(10)
+ggplot(T_I,aes(x=time,y=total_imp,color=brand_name))+geom_col(aes(fill=brand_name))+scale_x_date(labels = date_format("%Y %m"))+labs(title = "2016-2019 Total Imports",y="Total Imports",x="Time")
+```
+
+### Total Domestic Car Shares of Brands between 2016-2019
+```{r message = FALSE}
+T_D<-combined_sales%>%select(brand_name,total_dom,time)%>%group_by(time)%>% mutate(perc_total_dom = total_dom/sum(total_dom))%>%top_n(10)  
+ggplot(k,aes(x=time,y=total_dom))+geom_col(aes(fill=brand_name))+scale_x_date(labels = date_format("%Y %m"))+labs(title = "2016-2019 Total Domestic",y="Total Domestic",x="Time")
+```
