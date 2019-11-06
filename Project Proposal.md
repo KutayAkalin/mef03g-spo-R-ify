@@ -16,7 +16,9 @@ This proposal states the intended work to be performed by **spo-R-ify Group** (m
   
 ## Purpose of the Project
   Each song is separated within genres, and it's easy to feel it if a song clearly reflects its emotion. So is it possible to describe the emotion of each song using its features such as energy and valence? 
+  
   How do two different playlists differ between emotions? 
+  
   Curious about all this, we shaped our project. We decided to create emotion maps of songs and music playlists in line with the features of the songs in the data tables that we will obtain using the Spotify WEB API.
   
   
