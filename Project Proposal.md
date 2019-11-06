@@ -12,7 +12,7 @@ This proposal states the intended work to be performed by **spo-R-ify Group** (m
 
 ## Working Data
   Our data obtained directly from Spotify Web API. For API connection, we created "Client ID" and "Client Secret" 
-from [Spotify For Developers Website](https://developer.spotify.com/). Thus, we can access instantly audios, artists, users and
+from [Spotify for Developers Website](https://developer.spotify.com/). Thus, we can access instantly audios, artists, users and
 user playlists data. For further analysis, "spotifyr" package will be used.
   
   
