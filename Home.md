@@ -1,4 +1,5 @@
-### spo-R-ify Group Progress Journal
+# spo-R-ify Group Progress Journal
+
 
 ## Group Members
   - Anılcan Atik
@@ -6,6 +7,7 @@
   - Kutay Akalın
   - Tunahan Kılıç
 ---------
+
 
 ## ODD Assignment
   [November 5, 2019](https://github.com/pjournal/mef03g-spo-R-ify/blob/master/ODDProject/ODD_CarSales_Assignment.html)
