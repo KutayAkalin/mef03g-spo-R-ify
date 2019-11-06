@@ -11,7 +11,9 @@
 This proposal states the intended work to be performed by **spo-R-ify Group** (member names noted above) for the final project of **Data Analytics Essential** course.
 
 ## Working Data
-  LorepIpsumAmet... Datanın tanımı, nasıl elde ettik, nasıl kullanacağız(our tools)? 1 paragraf - Kutay
+  Our data obtained directly from Spotify Web API. For API connection, we created "Client ID" and "Client Secret" 
+from [Spotify For Developers Website](https://developer.spotify.com/). Thus, we can access instantly audios, artists, users and
+user playlists data. For further analysis, "spotifyr" package will be used.
   
   
 ## Purpose of the Project
