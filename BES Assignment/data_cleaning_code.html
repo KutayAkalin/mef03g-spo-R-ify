@@ -5,7 +5,13 @@ library(lubridate)
 library(ggplot2)
 library(bsts)
 
-bes_data <- read_excel("BES_2017_07.2019.xlsx", skip=2,col_names=FALSE)
+tmp<-tempfile(fileext=".xlsx")
+
+download.file("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/BES%20Assignment/BES_2017_07.2019.xlsx?raw=true",mode="wb",destfile=tmp)
+                      
+bes_data <-readxl::read_excel(tmp,skip=2,col_names=FALSE)
+
+file.remove(tmp)
 
 names(bes_data) <- c("sirket_adi", "katilimci_sayisi", "katilimci_fon_TL", "devlet_katkisi_TL", "katki_payi_TL", "tarih", "ss_emekli_sayisi", "ss_bireysel_sozlesme", "ss_grup_bireysel_sozlesme", "ss_isveren_grup_sertifika", "ss_toplam", "yy_bireysel_TL", "yy_grup_bireysel_TL", "yy_isveren_grup_TL", "yy_toplam_TL")
 
