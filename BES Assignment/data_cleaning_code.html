@@ -1,0 +1,14 @@
+library(tidyverse)
+library(readxl)
+library(zoo)
+library(lubridate)
+library(ggplot2)
+library(bsts)
+
+bes_data <- read_excel("BES_2017_07.2019.xlsx", skip=2,col_names=FALSE)
+
+names(bes_data) <- c("sirket_adi", "katilimci_sayisi", "katilimci_fon_TL", "devlet_katkisi_TL", "katki_payi_TL", "tarih", "ss_emekli_sayisi", "ss_bireysel_sozlesme", "ss_grup_bireysel_sozlesme", "ss_isveren_grup_sertifika", "ss_toplam", "yy_bireysel_TL", "yy_grup_bireysel_TL", "yy_isveren_grup_TL", "yy_toplam_TL")
+
+bes_data$tarih <-  format(as.Date(bes_data$tarih), "%Y-%m-%d")
+
+bes_data$tarih <- as.Date(bes_data$tarih)
