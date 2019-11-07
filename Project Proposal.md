@@ -39,5 +39,6 @@ user playlists data. For further analysis, "spotifyr" package will be used.
   There will be twelwe pre-defined *musical horoscope signs* (made-up according to the mood attributes of the playlists), and their definitions to be returned to the user as the output of the app along with their mood analysis plots. 
   
  
-
+## Summary
+ Spotifyr package, returns us variables such as, tempo, duration, key of the songs and Spotify's audio analysis features including danceability, acousticness,energy, insturmentalness, liveness. We are planning to create new concepts like 'Musical Horoscope' with the help of the Spotify's audio analysis variables and feature ggplot graphs that visualise the analysis data. Briefly,with the help of Spotifyr and Shiny packages, we intend to write a Shiny app, where user enters his/her playlist id, and as an output, the Shiny app presents musical anaylsis of the content, including concepts like 'Musical Horoscope','Emotional Attributes of the playlists'. 
  
