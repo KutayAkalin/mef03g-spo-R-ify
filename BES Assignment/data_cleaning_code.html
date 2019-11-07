@@ -12,3 +12,7 @@ names(bes_data) <- c("sirket_adi", "katilimci_sayisi", "katilimci_fon_TL", "devl
 bes_data$tarih <-  format(as.Date(bes_data$tarih), "%Y-%m-%d")
 
 bes_data$tarih <- as.Date(bes_data$tarih)
+
+#Aylık datayı kullanabilmek için her ayın son gününü almamız gerekiyor. Bu kod ile ayın son gününü seçiyoruz.
+#Pipe'da "filter(tarih %in% lastday)" olarak kullanılıyor.
+lastday <- unique(LastDayInMonth(bes_data$tarih))
