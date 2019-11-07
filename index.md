@@ -1,4 +1,4 @@
-# spo-R-ify Group Progress Journal
+# spo-R-ify GPJ
 
 
 ## Group Members
