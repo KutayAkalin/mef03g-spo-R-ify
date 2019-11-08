@@ -25,5 +25,6 @@ lastday <- unique(LastDayInMonth(bes_data$tarih))
 
 
 #Şirketlerin Ortalama Bireysel Yatırımcı Getirisi
+bes_data1<-bes_data%>%filter(tarih %in% lastday)
 birim_bireysel_getiri_data<-bes_data1%>%group_by(sirket_adi)%>%mutate(birim_bireysel_getiri = yy_bireysel_TL/ss_bireysel_sozlesme)%>%mutate(label = ifelse((birim_bireysel_getiri>8000|birim_bireysel_getiri<4000) & tarih=="2019-03-31"& sirket_adi!="Asya Emeklilik ve Hayat",sirket_adi,NA))
 ggplot(birim_bireysel_getiri_data,aes(x=tarih,y=birim_bireysel_getiri,color=sirket_adi))+geom_line()+labs(title = "Şirketlerin Ortalama Bireysel Yatırımcı Getirisi",y="Ortalama Bireysel Getiri",x="Tarih") +geom_text(aes(label = label),size=3)
