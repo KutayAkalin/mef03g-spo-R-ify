@@ -69,7 +69,7 @@ print(bes_data,width=Inf)
 
 
 ### Total Fund Values for Each Firm Yearly
-```{r }
+```{r fig.height=10, fig.width=10, fig.asp= .60}
 bes_data_monthly<- bes_data %>% filter(tarih %in% lastday) %>% mutate (year = format(tarih,"%Y"),month=format(tarih,"%B")) 
 
 slct_1<-bes_data_monthly %>% filter (month == "July")
