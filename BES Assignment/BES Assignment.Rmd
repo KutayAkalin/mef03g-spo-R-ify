@@ -85,3 +85,42 @@ ggplot(data = bes_katilimci, mapping = aes(x = tarih, y = emekli_oran, color = s
          # The new stuff
          strip.text = element_text(size = 8))
 ```
+
+
+### 4.3.Top 5 Companies
+```{r fig.height=10, fig.width=10, fig.asp= .60, message=FALSE}
+# Table: Top 5 Companies by Participants:
+top_5_by_katilimci_sayisi <- bes_data %>% 
+  group_by(sirket_adi) %>%
+  summarise(total_ks=sum(katilimci_sayisi)) %>%
+  arrange(desc(total_ks)) %>%
+  top_n(5, total_ks) 
+print(top_5_by_katilimci_sayisi)
+
+
+# Table: Top 5 Companies by Number of Contracts:
+top_5_by_sozlesme_sayisi <- bes_data %>% 
+  group_by(sirket_adi) %>%
+  summarise(total_ss=sum(ss_toplam)) %>%
+  arrange(desc(total_ss)) %>%
+  top_n(5, total_ss) 
+print(top_5_by_sozlesme_sayisi)
+
+
+# Table: Top 5 Companies by Market Share (Mean Participant Funds):
+top_5_by_market_share <- bes_data %>% 
+  group_by(sirket_adi) %>%
+  summarise(mean_of_fundsize=mean(katilimci_fon_TL, na.rm = TRUE)) %>%
+  mutate(mshare = percent(mean_of_fundsize / sum(mean_of_fundsize))) %>%
+  top_n(5, mshare) 
+print(top_5_by_market_share)
+
+
+# Plot: Top 5 Companies by Market Share (Mean Participant Funds):
+ggplot(data = top_5_by_market_share, aes(x=sirket_adi, y=mshare, fill=sirket_adi)) +
+  geom_bar(stat="identity")+
+  coord_polar()+
+  theme(legend.position = "right", axis.text.x = element_text(angle = 0))+
+  geom_text(aes(y = mshare , label = mshare))+
+  labs(title = "Market shares of top 5 companies", x="", y="")
+```
