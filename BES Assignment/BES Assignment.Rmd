@@ -88,7 +88,7 @@ ggplot(data = bes_katilimci, mapping = aes(x = tarih, y = emekli_oran, color = s
 
 
 ### 4.3.Top 5 Companies
-```{r fig.height=10, fig.width=10, fig.asp= .60, message=FALSE}
+```{r Top 5 Companies}
 # Table: Top 5 Companies by Participants:
 top_5_by_katilimci_sayisi <- bes_data %>% 
   group_by(sirket_adi) %>%
