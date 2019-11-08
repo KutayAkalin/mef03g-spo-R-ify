@@ -62,7 +62,7 @@ print(bes_data,width=Inf)
 ### 4.1.Total Fund Values for Each Firm Yearly
 ```{r fig.height=10, fig.width=10, fig.asp= .60}
 bes_data_monthly<- bes_data %>% filter(tarih %in% lastday) %>% mutate (year = format(tarih,"%Y"),month=format(tarih,"%B")) 
-slct_1<-bes_data_monthly %>% filter (month == "Temmuz")
+slct_1<-bes_data_monthly %>% filter (month == "July")
 slct_1
 ggplot(slct_1,aes(x=sirket_adi,y=katilimci_fon_TL ,fill=ordered(year))) +geom_bar(stat="identity",position="dodge") + labs(y="Total Funds",x="Firms",fill="") + theme(axis.text.x = element_text(angle = 90, hjust = 1))+scale_y_continuous(labels=comma)
 ```
