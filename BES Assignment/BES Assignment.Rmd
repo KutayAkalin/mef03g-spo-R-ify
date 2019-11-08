@@ -83,5 +83,5 @@ ggplot(data = bes_katilimci, mapping = aes(x = tarih, y = emekli_oran, color = s
         axis.title = element_text( size = 10, face = "bold" ),
          legend.position="none",
          # The new stuff
-         strip.text = element_text(size = 10))
+         strip.text = element_text(size = 8))
 ```
