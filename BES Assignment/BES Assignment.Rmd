@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 This is a worksheet of BES Assignment.The dataset for this project includes key indicators of Individual Pension System (BES) from the July 2017 through July 2019.
 
 ## Preparing and Cleaning Dataset 
-We begin the project by reading the excel files that we download from the [EGM website](https://www.egm.org.tr/bilgi-merkezi/istatistikler/). After the "Rapor Tarihi" filter was removed, raw data was created in the excel sheet. This sheet was uploaded to [spo'R'ify github page](https://github.com/pjournal/mef03g-spo-R-ify/tree/master/BES%20Assignment) for further analysis. Downloading file and cleaning process has given below:
+We begin the project by reading the excel files that we download from the [EGM website](https://www.egm.org.tr/bilgi-merkezi/istatistikler/). After the "Rapor Tarihi" filter was removed, raw data was created in the excel sheet. This sheet was uploaded to [spo'R'ify Github Page](https://github.com/pjournal/mef03g-spo-R-ify/tree/master/BES%20Assignment) for further analysis. Downloading file and cleaning process has given below:
 
 
 ```{r warning=FALSE,message=FALSE}
