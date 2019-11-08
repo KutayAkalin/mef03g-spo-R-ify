@@ -14,11 +14,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## BES Dataset
+## 1.BES Dataset
 
-This is a worksheet of BES Assignment.The dataset for this project includes key indicators of Individual Pension System (BES) from the July 2017 through July 2019.
+This is a worksheet of BES Assignment.The dataset for this project includes key indicators of Individual Pension System (BES) from the January 2017 through July 2019.
 
-## Preparing and Cleaning Dataset 
+## 2.Preparing and Cleaning Dataset 
 We begin the project by reading the excel files that we download from the [EGM website](https://www.egm.org.tr/bilgi-merkezi/istatistikler/). After the "Rapor Tarihi" filter was removed, raw data was created in the excel sheet. This sheet was uploaded to [spo'R'ify Github Page](https://github.com/pjournal/mef03g-spo-R-ify/tree/master/BES%20Assignment) for further analysis. Downloading file and cleaning process has given below:
 
 
@@ -26,34 +26,26 @@ We begin the project by reading the excel files that we download from the [EGM w
 library(tidyverse)
 library(readxl)
 library(bsts)
-
 #Downloading the excelel file
 tmp<-tempfile(fileext=".xlsx")
-
 download.file("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/BES%20Assignment/BES_2017_07.2019.xlsx?raw=true",mode="wb",destfile=tmp)
                       
 bes_data <-readxl::read_excel(tmp,skip=2,col_names=FALSE)
-
 file.remove(tmp)
-
 #cleaining process
 names(bes_data) <- c("sirket_adi", "katilimci_sayisi", "katilimci_fon_TL", "devlet_katkisi_TL", "katki_payi_TL", "tarih", "ss_emekli_sayisi", "ss_bireysel_sozlesme", "ss_grup_bireysel_sozlesme", "ss_isveren_grup_sertifika", "ss_toplam", "yy_bireysel_TL", "yy_grup_bireysel_TL", "yy_isveren_grup_TL", "yy_toplam_TL")
-
 bes_data$tarih <-  format(as.Date(bes_data$tarih), "%Y-%m-%d")
-
 bes_data$tarih <- as.Date(bes_data$tarih)
-
 #To use monthly data, we need to get the last day of each month. With this code, we select the last day of the month.
 #In pipe, "filter(tarih %in% lastday)" can be used.
 lastday <- unique(LastDayInMonth(bes_data$tarih))
-
 bes_data <- bes_data %>% mutate_if(is.numeric,funs(ifelse(is.na(.),0,.)))
-
+options(scipen=999)
 ```
 
 
 
-## Loding Libraries and Civilized Data Display
+## 3.Loding Libraries and Civilized Data Display
 ```{r warning=FALSE,message=FALSE}
 library(tidyverse)
 library(ggplot2)
@@ -62,18 +54,34 @@ library(scales)
 library(formattable)
 library(knitr)
 library(bsts)
-
 print(bes_data,width=Inf)
 ```
 
+## 4.Exploratory Data Analysis
 
-
-### Total Fund Values for Each Firm Yearly
+### 4.1.Total Fund Values for Each Firm Yearly
 ```{r fig.height=10, fig.width=10, fig.asp= .60}
 bes_data_monthly<- bes_data %>% filter(tarih %in% lastday) %>% mutate (year = format(tarih,"%Y"),month=format(tarih,"%B")) 
-
 slct_1<-bes_data_monthly %>% filter (month == "July")
+slct_1
+ggplot(slct_1,aes(x=sirket_adi,y=katilimci_fon_TL ,fill=ordered(year))) +geom_bar(stat="identity",position="dodge") + labs(y="Total Funds",x="Firms",fill="") + theme(axis.text.x = element_text(angle = 90, hjust = 1))+scale_y_continuous(labels=comma)
+```
 
-ggplot(slct_1,aes(x=sirket_adi,y=katilimci_fon_TL ,fill=ordered(year))) +geom_bar(stat="identity",position="dodge") + labs(y="Total Funds",x="Firms",fill="") + theme(axis.text.x = element_text(angle = 90, hjust = 1))+scale_y_continuous(labels=comma) 
 
+### 4.2.Ratio of Number of Retired Participants to Total Number of Participants by Each Firm
+```{r fig.height=10, fig.width=10, fig.asp= .60, message=FALSE}
+bes_katilimci <- bes_data %>% filter(tarih %in% lastday) %>% group_by(sirket_adi, tarih) %>% summarise(emekli_toplam = sum(ss_emekli_sayisi), sozlesme_toplam = sum(ss_toplam), emekli_oran = emekli_toplam / sozlesme_toplam)
+
+bes_katilimci
+
+ggplot(data = bes_katilimci, mapping = aes(x = tarih, y = emekli_oran, color = sirket_adi, group = 2)) +
+  geom_line() +
+  facet_wrap(facets =  vars(sirket_adi)) +
+  labs(title = "Ratio of Retired Participants to Total Participants", x = "Date", y = "Ratio of Retired Participants ", color = " ") +
+  theme(axis.text = element_text( size = 8 ),
+        axis.text.x = element_text( size = 8 ), 
+        axis.title = element_text( size = 10, face = "bold" ),
+         legend.position="none",
+         # The new stuff
+         strip.text = element_text(size = 10))
 ```
