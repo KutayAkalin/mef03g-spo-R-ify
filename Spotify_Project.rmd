@@ -1,0 +1,117 @@
+---
+title: "Spotify Project"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+##Accessing Spotifty Web API
+```{r}
+library(httpuv)
+library(spotifyr)
+library(tidyverse)
+library(knitr)
+library(lubridate)
+
+
+Sys.setenv(SPOTIFY_CLIENT_ID = 'f5adea41ba0c4184a3d15e9960b4a0c2')
+Sys.setenv(SPOTIFY_CLIENT_SECRET = '3b5362e9b6a44ea6a774911ae7700334')
+
+access_token <- get_spotify_access_token()
+```
+
+
+##Top 50 plyalist for Countries
+### Turkey Top 50 Analysis
+
+```{r}
+
+turkey_top_50_id="37i9dQZEVXbIVYVBNw9D5K"
+
+turkey_top50_audio_features <- get_playlist_audio_features("spotifycharts",turkey_top_50_id)
+turkey_top50_audio_features
+```
+
+
+
+#### Adding Sentiments in Each Track
+```{r}
+
+classify_track_sentiment <- function(valence, energy) {
+    if (is.na(valence) | is.na(energy)) {
+        return(NA)
+    }
+    else if (valence >= .5) {
+        if (energy >= .5) {
+            return('Happy/Joyful')
+        } else {
+            return('Chill/Peaceful')
+        }
+    } else {
+        if (energy >= .5) {
+            return('Turbulent/Angry')
+        } else {
+            return('Sad/Depressing')
+        }
+    }
+}
+
+track_sentiment = c()
+for (i in 1:50){
+  track_sentiment[i]= classify_track_sentiment(turkey_top50_audio_features[[15]][[i]],turkey_top50_audio_features[[7]][[i]])
+  
+}
+
+turkey_top50_audio_features<-cbind(turkey_top50_audio_features,track_sentiment)
+```
+
+#### Selection of Necessary Columns for Analysing
+
+```{r}
+
+track_id="6bBnnrknLbDoOCUdKMkmnq"
+track_audio_analyse_selection<- turkey_top50_audio_features %>% select(track.name,track.id,track.artists,track.album.images,track.album.release_date,track.popularity,danceability:tempo,track_sentiment,track.duration_ms)
+track_audio_analyse_selection
+
+
+```
+
+#### Artists in Top 50
+```{r}
+
+artists=c()
+for (i in 1:50){
+  
+  artists <- c(artists, track_audio_analyse_selection[[3]][[i]][[3]])
+  
+}
+
+#Changing artists vector as a dataframe and sorting bypearing freaquency in top 50 music
+artist_df<-as.data.frame(table(artists)) %>% arrange(desc(Freq))
+artist_df
+
+
+```
+
+
+#### Sentiment Counts in Playlist
+```{r}
+
+track_audio_analyse_selection %>% group_by(track_sentiment) %>% count()
+```
+
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
