@@ -1,0 +1,203 @@
+---
+title: "Spotify Project: A Summary of the Data and Explanations"
+author: 
+    - _Anılcan_ _Atik_
+    - _Dost_ _Karaahmetli_
+    - _Kutay_ _Akalın_
+    - _Tunahan_ _Kılıç_
+      
+date: "November 17th, 2019"
+output: 
+  html_document
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data Explanation
+
+Our data obtained directly from Spotify Web API. For API connection, we created “Client ID” and “Client Secret” from [Spotify for Developers Website](https://developer.spotify.com/documentation/web-api/). For this purpose, **"spotifyr"** package used for making connection.
+
+### Accessing Spotifty Web API
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(httpuv)
+library(spotifyr)
+library(tidyverse)
+library(knitr)
+library(lubridate)
+library(ggplot2)
+Sys.setenv(SPOTIFY_CLIENT_ID = 'f5adea41ba0c4184a3d15e9960b4a0c2')
+Sys.setenv(SPOTIFY_CLIENT_SECRET = '3b5362e9b6a44ea6a774911ae7700334')
+access_token <- get_spotify_access_token()
+```
+
+When connection is made successfully, we can access lots of difrent type data such as aritst, albums, tracks, user profile etc. Here is the Spotify API [References](https://developer.spotify.com/documentation/web-api/reference/). In our project, we will usually use playlist, artist and track data.
+
+#### Track
+
+[Documentation on Tracks Data](https://developer.spotify.com/documentation/web-api/reference/tracks/)
+
+#### Playlist 
+
+[Documentation on Playlists Data](https://developer.spotify.com/documentation/web-api/reference/playlists/)
+
+#### Artist
+
+[Documentation on Artists Data](https://developer.spotify.com/documentation/web-api/reference/artists/)
+
+#### Data Definitions
+
+[Documentation on Explanation Data](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/)
+
+
+## Initial Analysis
+### Turkey Top 50 Analysis
+
+```{r}
+turkey_top_50_id="37i9dQZEVXbIVYVBNw9D5K"
+turkey_top50_audio_features <- get_playlist_audio_features("spotifycharts",turkey_top_50_id)
+glimpse(turkey_top50_audio_features)
+```
+
+
+
+### Adding Sentiments in Each Track
+
+The purpose of this function named _"classify_track_sentiment"_ is important for us to work primarily to reveal the mood of songs and song lists along these lines. Energy and valence are two important factors in terms of interpreting emotion in music. The variations of these two factors, which have values between 0 and 1, in this range determine the songs to be turbulent/angry, happy/joyful, sad/depressing and chill/peaceful.
+
+According to [Get Audio Features for a Track](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/), explanations of the corresponding factors are as follows.
+
+#### Energy
+Data type: *Float*<br/>
+Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy. 
+
+#### Valence
+Data type: *Float*<br/>
+A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry). 
+```{r}
+classify_track_sentiment <- function(valence, energy) {
+    if (is.na(valence) | is.na(energy)) {
+        return(NA)
+    }
+    else if (valence >= .5) {
+        if (energy >= .5) {
+            return('Happy/Joyful')
+        } else {
+            return('Chill/Peaceful')
+        }
+    } else {
+        if (energy >= .5) {
+            return('Turbulent/Angry')
+        } else {
+            return('Sad/Depressing')
+        }
+    }
+}
+track_sentiment = c()
+for (i in 1:50){
+  track_sentiment[i]= classify_track_sentiment(turkey_top50_audio_features[[15]][[i]],turkey_top50_audio_features[[7]][[i]])
+  
+}
+turkey_top50_audio_features<-cbind(turkey_top50_audio_features,track_sentiment)
+```
+
+### Selection of Necessary Columns for Analysing
+
+```{r}
+track_id="6bBnnrknLbDoOCUdKMkmnq"
+track_audio_analyse_selection<- turkey_top50_audio_features %>% select(track.name,track.id,track.artists,track.album.images,track.album.release_date,track.popularity,danceability:tempo,track_sentiment,track.duration_ms)
+head(track_audio_analyse_selection,width=10)
+  glimpse(track_audio_analyse_selection)
+```
+
+### Artists in Top 50
+```{r}
+artists=c()
+for (i in 1:50){
+  
+  artists <- c(artists, track_audio_analyse_selection[[3]][[i]][[3]])
+  
+}
+#Changing artists vector as a dataframe and sorting bypearing freaquency in top 50 music
+artist_df<-as.data.frame(table(artists)) %>% arrange(desc(Freq))
+head(artist_df, 15L)
+```
+
+
+### Sentiment Counts in Playlist
+```{r}
+sent_count <- track_audio_analyse_selection %>% group_by(track_sentiment) %>% count()
+sent_count
+```
+
+```{r}
+ggplot(sent_count, aes(x=track_sentiment, y=n, fill=track_sentiment)) +
+  geom_bar(stat="identity")
+```
+
+
+```{r}
+ggplot(track_audio_analyse_selection,aes(x = valence, y = energy, color = track_sentiment)) + geom_point() +
+  labs(color = "", title = "Sentiment Analysis of Turkey Top 50 Chart") +
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
+  geom_label(aes(x = 0.25, y = 0.97, label = "Turbulent/Angry"), label.padding = unit(2, "mm"),  fill = "darkgrey", color="white") +
+  geom_label(aes(x = 0.75, y = 0.97, label = "Happy/Joyful"), label.padding = unit(2, "mm"), fill = "darkgrey", color="white") +
+  geom_label(aes(x = 0.25, y = 0.03, label = "Sad/Depressing"), label.padding = unit(2, "mm"),  fill = "darkgrey", color="white") +
+  geom_label(aes(x = 0.75, y = 0.03, label = "Chill/Peaceful"), label.padding = unit(2, "mm"), fill = "darkgrey", color="white") +
+  geom_segment(aes(x = 1, y = 0, xend = 1, yend = 1)) +
+  geom_segment(aes(x = 0, y = 0, xend = 0, yend = 1)) +
+  geom_segment(aes(x = 0, y = 0, xend = 1, yend = 0)) +
+  geom_segment(aes(x = 0, y = 0.5, xend = 1, yend = 0.5)) +
+  geom_segment(aes(x = 0.5, y = 0, xend = 0.5, yend = 1)) +
+  geom_segment(aes(x = 0, y = 1, xend = 1, yend = 1)) 
+  
+```
+
+
+### Playlist Profile
+```{r}
+mean_values <- turkey_top50_audio_features %>% select(danceability,energy,loudness,speechiness,acousticness,instrumentalness,liveness,valence,tempo,track.duration_ms,track.album.release_date)
+mean_values<-mean_values%>%mutate(mean_danceability=mean(danceability),mean_energy=mean(energy),mean_loudness=mean(loudness),mean_speechiness=mean(speechiness),mean_acousticness=mean(acousticness),mean_instrumentalness=mean(instrumentalness),mean_liveness=mean(liveness),mean_liveness=mean(liveness),mean_valence=mean(valence),mean_tempo=mean(tempo),mean_track.duration_ms=mean(track.duration_ms))
+mean_values<-mean_values[-c(1,1:11)]
+mean_values<-mean_values[1,]
+mean_values
+
+```
+
+
+#### Liveness 
+Data type: *Float*<br/>
+  Detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live. A value above 0.8 provides strong likelihood that the track is live. 
+
+#### Tempo
+Data type: *Float*<br/>
+  The overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration. 
+
+#### Danceability
+Data type: *Float*<br/>
+	Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity. A value of 0.0 is least danceable and 1.0 is most danceable. 
+
+#### Energy 
+Data type: *Float*<br/>
+  Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy. 
+  
+#### Loudness 
+Data type: *Float*<br/> 
+  The overall loudness of a track in decibels (dB). Loudness values are averaged across the entire track and are useful for comparing relative loudness of tracks. Loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude). 
+
+#### Speechiness
+Data type: *Float*<br/>
+  Speechiness detects the presence of spoken words in a track. The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value. Values above 0.66 describe tracks that are probably made entirely of spoken words. Values between 0.33 and 0.66 describe tracks that may contain both music and speech, either in sections or layered, including such cases as rap music. Values below 0.33 most likely represent music and other non-speech-like tracks. 
+  
+#### Acousticness 
+Data type: *Float*<br/> 
+  A confidence measure from 0.0 to 1.0 of whether the track is acoustic. 1.0 represents high confidence the track is acoustic. 
+  
+#### Duration_ms
+Data type: *int*<br/>
+  The duration of the track in milliseconds. 
+  
+ 
