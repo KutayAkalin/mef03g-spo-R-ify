@@ -19,7 +19,7 @@
 
 -------------------
 
-## Group Project: 
+## Group Project: Mood Analysis on Emotional Attributes of Spotify Playlists
 ### Proposal
   [November 6, 2019](https://pjournal.github.io/mef03g-spo-R-ify/spoRify-Gr-Pr-Proposal.html)
 
