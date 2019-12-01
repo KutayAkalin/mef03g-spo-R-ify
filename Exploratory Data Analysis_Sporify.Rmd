@@ -18,6 +18,9 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Data Explanation
+
+Our data obtained directly from Spotify Web API. For API connection, we created “Client ID” and “Client Secret” from [Spotify for Developers Website](https://developer.spotify.com/documentation/web-api/). For this purpose, **"spotifyr"** package used for making connection.
 
 ## 1. Accessing Spotifty Web API
 ```{r message=FALSE, warning=FALSE}
@@ -28,11 +31,13 @@ library(knitr)
 library(lubridate)
 library(ggalt)
 library(plotly)
+library(scales)
 Sys.setenv(SPOTIFY_CLIENT_ID = 'f5adea41ba0c4184a3d15e9960b4a0c2')
 Sys.setenv(SPOTIFY_CLIENT_SECRET = '3b5362e9b6a44ea6a774911ae7700334')
 access_token <- get_spotify_access_token()
 options(max.print=1000000)
 ```
+When connection is made successfully, we can access lots of difrent type data such as aritst, albums, tracks, user profile etc. Here is the Spotify API [References](https://developer.spotify.com/documentation/web-api/reference/). In our project, we will usually use playlist, artist and track data.
 
 ## 2. Gathering Turkey, USA, Japan and Brazil Top 50 Playlists
 ```{r message=FALSE, warning=FALSE}
@@ -248,4 +253,108 @@ ggplot(sentiment_by_countries,aes(x = valence, y = energy, color = track_sentime
   geom_segment(aes(x = 0.5, y = 0, xend = 0.5, yend = 1)) +
   geom_segment(aes(x = 0, y = 1, xend = 1, yend = 1)) +
   facet_wrap(~ playlist_name)
+```
+## 5. Turkey Top 200 Daily Data Between 2017-2019 
+ 
+Data obtained from [Spotify Charts](https://spotifycharts.com/regional).
+```{r message=FALSE, warning=FALSE}
+topturkey200<-readRDS(url("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/turkeytop200.rds?raw=true"))
+glimpse(topturkey200)
+```
+
+### 5.1 Monthly Change in Total Streams
+```{r message=FALSE, warning=FALSE, fig.height = 8, fig.width = 10}
+#First cal
+#topturkey200 %>% group_by(Artist)%>% summarise(Total_number=n()) %>% arrange(desc(Total_number))
+
+change<-topturkey200 %>% mutate(Year_Month = format(Date,"%Y/%m")) %>% group_by(Year_Month) %>% summarise(Total_Stream=sum(as.numeric(Streams))) 
+
+
+ggplot(change, aes(x = Year_Month,y=Total_Stream,group=1)) + geom_point() + geom_smooth() + theme(axis.text.x = element_text(angle = 90),title = element_text(size = 16, face = "bold"), plot.title = element_text(hjust = 0.5)) + labs(x = "Month", y = "Total Streams",title = "Total Stream Change") + scale_y_continuous(labels = comma)
+
+```
+
+### 5.2. Most Streamed 20 Tracks
+```{r message=FALSE, warning=FALSE}
+
+rank<-topturkey200 %>% group_by(Artist,Track.Name) %>% summarise(Total_Stream=sum(as.numeric(Streams))) %>% arrange(desc(Total_Stream))
+
+head(rank,n=20L)
+```
+
+### 5.3. Sentiment Analysis of Tracks
+#### 5.3.1 Data Preparation
+```{r message=FALSE, warning=FALSE}
+
+top_200_audio_features<-topturkey200 %>% mutate(id=substring(topturkey200$URL,32)) 
+
+top_200_audio_features<-top_200_audio_features[!duplicated(top_200_audio_features[,c('id')]),]
+
+glimpse(top_200_audio_features)
+```
+
+```{r message=FALSE, warning=FALSE}
+
+Id_list=top_200_audio_features$id
+
+#Tracks feautres obtaining code is below. Because of the process time data frame downloaded from github repository.
+#a<-unique(Id_list)
+#tracks_features=get_track_audio_features(a[1])
+#for (x in 2:length(a)){
+#  tracks_features <- rbind(tracks_features,get_track_audio_features(a[x]))
+#}
+#tracks_features<-tracks_features%>%slice(-1) 
+ 
+tracks_features<-readRDS(url("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/top200_tracks_features.rds?raw=true"))
+glimpse(tracks_features)
+
+```
+
+```{r message=FALSE, warning=FALSE}
+
+top_200_audio_features <- inner_join(top_200_audio_features,tracks_features,by="id")
+
+Sentiment=c()
+for (i in 1:nrow(top_200_audio_features)){
+  Sentiment[i]=classify_track_sentiment(valence=top_200_audio_features$valence[i],energy=top_200_audio_features$energy[i])
+}
+
+top_200_audio_features<-cbind(top_200_audio_features,Sentiment)
+
+glimpse(top_200_audio_features)
+```
+#### 5.3.1 Sentiment Bar Graph
+```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
+
+sent_count <- top_200_audio_features %>% group_by(Sentiment) %>% count()
+
+ggplot(sent_count, aes(x=Sentiment, y=n, fill=Sentiment)) +
+  geom_bar(stat="identity") + 
+  labs(title = "Sentiment Count", x = "Sentiment Distribution", y = "Count of Sentiments") +
+  theme(title = element_text(size = 16, face = "bold"), plot.title = element_text(hjust = 0.5), 
+        axis.title.x = element_text(size = 14, face = "bold"), 
+        axis.title.y = element_text(size = 14, face = "bold"), legend.title = element_blank())
+```
+
+#### 5.3.1 Sentiment Gradient Chart
+```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
+
+
+ggplot(top_200_audio_features,aes(x = valence, y = energy, color = Sentiment)) + geom_point() +
+  labs(color = "", title = "Sentiment Analysis of Turkey Top 200 Chart Between 2017 and 2019") +
+    theme(title = element_text(size = 16, face = "bold"), plot.title = element_text(hjust = 0.5), 
+        axis.title.x = element_text(size = 14, face = "bold"), 
+        axis.title.y = element_text(size = 14, face = "bold"), legend.title = element_blank()) +
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
+  geom_label(aes(x = 0.25, y = 0.97, label = "Turbulent/Angry"), label.padding = unit(2, "mm"),  fill = "darkgrey", color="white") +
+  geom_label(aes(x = 0.75, y = 0.97, label = "Happy/Joyful"), label.padding = unit(2, "mm"), fill = "darkgrey", color="white") +
+  geom_label(aes(x = 0.25, y = 0.03, label = "Sad/Depressing"), label.padding = unit(2, "mm"),  fill = "darkgrey", color="white") +
+  geom_label(aes(x = 0.75, y = 0.03, label = "Chill/Peaceful"), label.padding = unit(2, "mm"), fill = "darkgrey", color="white") +
+  geom_segment(aes(x = 1, y = 0, xend = 1, yend = 1)) +
+  geom_segment(aes(x = 0, y = 0, xend = 0, yend = 1)) +
+  geom_segment(aes(x = 0, y = 0, xend = 1, yend = 0)) +
+  geom_segment(aes(x = 0, y = 0.5, xend = 1, yend = 0.5)) +
+  geom_segment(aes(x = 0.5, y = 0, xend = 0.5, yend = 1)) +
+  geom_segment(aes(x = 0, y = 1, xend = 1, yend = 1)) 
 ```
