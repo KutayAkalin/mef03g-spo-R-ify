@@ -8,7 +8,9 @@ author:
       
 date: "November 28th, 2019"
 output: 
-  html_document
+  html_document:
+    toc: true
+    toc_float: true
 
 ---
 
@@ -17,9 +19,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-
-### Accessing Spotifty Web API
-```{r message=FALSE, warning=FALSE, include=FALSE}
+## 1. Accessing Spotifty Web API
+```{r message=FALSE, warning=FALSE}
 library(httpuv)
 library(spotifyr)
 library(tidyverse)
@@ -30,46 +31,39 @@ library(plotly)
 Sys.setenv(SPOTIFY_CLIENT_ID = 'f5adea41ba0c4184a3d15e9960b4a0c2')
 Sys.setenv(SPOTIFY_CLIENT_SECRET = '3b5362e9b6a44ea6a774911ae7700334')
 access_token <- get_spotify_access_token()
-
 options(max.print=1000000)
 ```
 
-
+## 2. Gathering Turkey, USA, Japan and Brazil Top 50 Playlists
 ```{r message=FALSE, warning=FALSE}
 #Get Turkey Top 50
 turkey_top_50_id="37i9dQZEVXbIVYVBNw9D5K"
 turkey_top_50_audio_features <- get_playlist_audio_features("spotifycharts", turkey_top_50_id)
-
 #Get USA Top 50
 usa_top_50_id = "37i9dQZEVXbLRQDuF5jeBp"
 usa_top_50_audio_features <- get_playlist_audio_features("spotifycharts", usa_top_50_id)
-
 #Get Japan Top 50
 japan_top_50_id = "37i9dQZEVXbKXQ4mDTEBXq"
 japan_top_50_audio_features <- get_playlist_audio_features("spotifycharts", japan_top_50_id)
-
-
 #Get Brazil Top 50
 brazil_top_50_id = "37i9dQZEVXbMXbN3EUUhlg"
 brazil_top_50_audio_features <- get_playlist_audio_features("spotifycharts", brazil_top_50_id)
-
 #Combining TR, USA, Japan and Brazil top 50 lists
 combined_lists <- bind_rows(turkey_top_50_audio_features, usa_top_50_audio_features, japan_top_50_audio_features, brazil_top_50_audio_features)
 glimpse(combined_lists)
 ```
 
 
-
-### Adding Sentiments in Each Track
+## 3. Adding Sentiments in Each Track
 
 The purpose of this function named _"classify_track_sentiment"_ is important for us to work primarily to reveal the mood of songs and song lists along these lines. Energy and valence are two important factors in terms of interpreting emotion in music. The variations of these two factors, which have values between 0 and 1, in this range determine the songs to be turbulent/angry, happy/joyful, sad/depressing and chill/peaceful.
 
 According to [Get Audio Features for a Track](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/), explanations of the corresponding factors are as follows.
 
-#### Energy
+### 3.1. Energy
 Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy. 
 
-#### Valence
+### 3.2. Valence
 A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).
 ```{r message=FALSE, warning=FALSE}
 classify_track_sentiment <- function(valence, energy) {
@@ -90,47 +84,38 @@ classify_track_sentiment <- function(valence, energy) {
     }
   }
 }
-
 track_sentiment = c()
-
-
 for (i in 1:200){
   
   track_sentiment[i] = classify_track_sentiment(combined_lists[[15]][[i]], combined_lists[[7]][[i]])
   
 }
-
 #Adding sentiment column to Combined of four countries
 combined_lists<-cbind(combined_lists,track_sentiment)
-
 #Adding Artist Column to Combined Music List
 track_audio_combined <- combined_lists %>% 
   select(track.name,track.id,track.artists,track.album.release_date,track.popularity,danceability:tempo,track_sentiment,track.duration_ms)
-
 head(track_audio_combined)
-
-
 artist_names = c()
 for (i in 1:200){
   
   artist_names[i] <- track_audio_combined[[3]][[i]][[3]]
   
 }
-
 combined_lists <-cbind(combined_lists, artist_names)
 glimpse(combined_lists)
 ```
 
-##Country lists by key
+## 4. Plot Analysis
+
+### 4.1. Country Playlists by Key
 
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
-
 country_by_key <- combined_lists%>%
   select(playlist_name, key_name, track.name)%>%
   group_by(playlist_name) %>% count(key_name, sort = TRUE)
   
 country_by_key
-
 ggplot(country_by_key, aes(x = key_name, y = n, fill = playlist_name)) + 
   geom_bar(stat = "identity") +
   labs(title = "Playlists by Key Name", x = "Key Name", y = "Total Number of Keys") + 
@@ -139,16 +124,13 @@ ggplot(country_by_key, aes(x = key_name, y = n, fill = playlist_name)) +
         axis.title.y = element_text(size = 14, face = "bold"), legend.title = element_blank())
 ```
 
-##Common songs in playlists
+### 4.2. Common Songs in Playlists
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
-
 common_songs <- combined_lists %>% group_by(track.name, artist_names) %>%
   summarise(n_songs = n()) %>% 
   filter(n_songs >= 2) %>% 
   arrange(desc(n_songs))
-
 common_songs
-
 ggplot(common_songs, aes(x = reorder(track.name, n_songs), y = n_songs, fill = artist_names)) + 
   geom_bar(stat = "identity") + 
   labs(title = "Common Songs on Playlists", x = "Song Name", y = "Number of Songs") + 
@@ -159,9 +141,8 @@ ggplot(common_songs, aes(x = reorder(track.name, n_songs), y = n_songs, fill = a
 ```
 
 
-##Danceability Density of country lists
+### 4.3 .Danceability Density of Playlists
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
-
 ggplot(combined_lists, aes(x = danceability, fill = playlist_name)) + 
   geom_density(alpha = 0.7, color = NA)+
   labs(x = "Danceability", y = "Density") +
@@ -174,23 +155,20 @@ ggplot(combined_lists, aes(x = danceability, fill = playlist_name)) +
 ```
 
 
-##Playlists Energy and Valence Range
+### 4.4. Energy and Valence Range of Playlists
 ```{r message=FALSE, warning=FALSE}
-
 playlist_feature_range <- combined_lists %>%
   group_by(playlist_name)%>%
   mutate(max_energy=max(energy), max_valence = max(valence))%>%
   mutate(min_energy=min(energy), min_valence = min(valence))%>%
   select(playlist_name, min_energy, max_energy, min_valence, max_valence)%>%
   unique()
-
 playlist_feature_range
 ```
 
 
-##Energy Range of Playlists with Dumbbell Plot
+### 4.4.1. Energy and Valence Range of Playlists with Dumbbell Plot
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
-
 energy_range_plot <- plot_ly(playlist_feature_range, color = I("gray80"),  
                 hoverinfo = 'text') %>%
   add_segments(x = ~max_energy, xend = ~min_energy, y = ~playlist_name, yend = ~playlist_name, showlegend = FALSE) %>%
@@ -203,19 +181,16 @@ energy_range_plot <- plot_ly(playlist_feature_range, color = I("gray80"),
     title = "Playlist Energy and Valence Range",
     xaxis = list(title = "Energy and Valence"),
     yaxis= list(title="Country Lists"))
-
 ggplotly(energy_range_plot)
   
 ```
 
 
-##Excitement of Playlists
+### 4.5. Excitement of Playlists
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
-
 excitement_of_playlist <- combined_lists %>% group_by(playlist_name) %>% 
   select(playlist_name, track.name, valence, energy, loudness, danceability, tempo) %>% 
   mutate(excitement = loudness + tempo + (energy*100) + (danceability*100) + (valence*100), excitement_mean = mean(excitement))
-
 ggplot(excitement_of_playlist, aes(x = excitement, fill = playlist_name, color = playlist_name)) + 
   geom_histogram(binwidth = 30, position = "identity", alpha = 0.7) +
   geom_vline(data = excitement_of_playlist, aes(xintercept = excitement_mean, color = playlist_name),
@@ -227,13 +202,10 @@ ggplot(excitement_of_playlist, aes(x = excitement, fill = playlist_name, color =
 ```
 
 
-##Mean Excitement of Playlists
+### 4.6. Mean Excitement of Playlists
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
-
 excitement_mean <- excitement_of_playlist %>% group_by(playlist_name) %>% select(excitement_mean) %>% unique()
-
 excitement_mean
-
 ggplot(excitement_mean, aes(x = reorder(playlist_name, excitement_mean), y = excitement_mean, fill = playlist_name)) + 
   geom_bar(stat ="identity") + 
   labs(title = "Excitement Comparison of Playlists", x = "Country Playlist Names", y = "Means of Excitement", fill = "Country Charts", 
@@ -246,20 +218,18 @@ ggplot(excitement_mean, aes(x = reorder(playlist_name, excitement_mean), y = exc
 
 
 
-##Sentiment Analysis of Country Playlists with Gradient Chart
+### 4.7. Sentiment Analysis of Country Playlists with Gradient Chart
 ```{r message=FALSE, warning=FALSE}
-
 sentiment_by_countries <- combined_lists %>% group_by(playlist_name) %>% 
   select(playlist_name, track.name, artist_names, valence, energy, track_sentiment)
 
+sentiment_by_countries
 ```
 
-##Group of sentiment count by each contry
+### 4.7.1. Group of sentiment count by each contry
 
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
-
 sentiment_by_countries %>% count(track_sentiment, sort = TRUE)
-
 ggplot(sentiment_by_countries,aes(x = valence, y = energy, color = track_sentiment)) + geom_point() +
   labs(color = "", title = "Sentiment Analysis by Each Country") +
   theme(title = element_text(size = 16, face = "bold"), plot.title = element_text(hjust = 0.5), 
@@ -279,5 +249,3 @@ ggplot(sentiment_by_countries,aes(x = valence, y = energy, color = track_sentime
   geom_segment(aes(x = 0, y = 1, xend = 1, yend = 1)) +
   facet_wrap(~ playlist_name)
 ```
-
-
