@@ -23,7 +23,8 @@ knitr::opts_chunk$set(echo = TRUE)
 Our data obtained directly from Spotify Web API. For API connection, we created “Client ID” and “Client Secret” from [Spotify for Developers Website](https://developer.spotify.com/documentation/web-api/). For this purpose, **"spotifyr"** package used for making connection.
 
 ## 2. Accessing Spotifty Web API
-```{r message=FALSE, warning=FALSE,include=FALSE}
+
+```{r message=FALSE, warning=FALSE}
 library(httpuv)
 library(spotifyr)
 library(tidyverse)
@@ -32,10 +33,14 @@ library(lubridate)
 library(ggalt)
 library(plotly)
 library(scales)
+
+options(max.print=1000000)
+```
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
 Sys.setenv(SPOTIFY_CLIENT_ID = 'f5adea41ba0c4184a3d15e9960b4a0c2')
 Sys.setenv(SPOTIFY_CLIENT_SECRET = '3b5362e9b6a44ea6a774911ae7700334')
 access_token <- get_spotify_access_token()
-options(max.print=1000000)
 ```
 When connection is made successfully, we can access lots of difrent type data such as aritst, albums, tracks, user profile etc. Here is the Spotify API [References](https://developer.spotify.com/documentation/web-api/reference/). In our project, we will usually use playlist, artist and track data.
 
