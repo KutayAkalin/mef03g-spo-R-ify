@@ -289,7 +289,7 @@ head(rank,n=20L)
 ```
 
 ### 6.3. Sentiment Analysis of Tracks
-#### 6.3.1. Data Preparation
+### 6.3.1. Data Preparation
 ```{r message=FALSE, warning=FALSE}
 
 top_200_audio_features<-topturkey200 %>% mutate(id=substring(topturkey200$URL,32)) 
@@ -330,7 +330,7 @@ top_200_audio_features<-cbind(top_200_audio_features,Sentiment)
 glimpse(top_200_audio_features)
 ```
 
-#### 6.3.2. Sentiment Bar Graph
+### 6.3.2. Sentiment Bar Graph
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
 
 sent_count <- top_200_audio_features %>% group_by(Sentiment) %>% count()
@@ -343,7 +343,7 @@ ggplot(sent_count, aes(x=Sentiment, y=n, fill=Sentiment)) +
         axis.title.y = element_text(size = 14, face = "bold"), legend.title = element_blank())
 ```
 
-#### 6.3.3. Sentiment Gradient Chart
+### 6.3.3. Sentiment Gradient Chart
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
 
 
