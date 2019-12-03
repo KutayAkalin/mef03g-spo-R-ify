@@ -27,6 +27,6 @@
   [November 17, 2019](https://pjournal.github.io/mef03g-spo-R-ify/Spotify_Project_Data_Summary1.html)
  
 ### Exploratory Data Analysis
-  [November 17, 2019](https://pjournal.github.io/mef03g-spo-R-ify/Exploratory_Data_Analysis.html)
+  [December 1, 2019](https://pjournal.github.io/mef03g-spo-R-ify/Exploratory_Data_Analysis.html)
   
 ---------------  
