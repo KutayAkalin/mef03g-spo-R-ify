@@ -1,5 +1,5 @@
 ülke idleri playlistURI.csv'de,
-data_extraction.R bunu read edip extract ediyo, meanlerini alıyo top_50_charts.txt olarak kaydediyor
+data_extraction.R bunu okuyup extract ediyor, meanlerini alıyor top_50_charts.txt olarak kaydediyor
 app.R top_50_charts.txt dosyasını okuyor ordan,
 o database ile shiny interface'de girdiğimiz user playlist id'sini spotifyr'dan çekiyor
 gelen user_playlist datasının meanlerini çıkarıp top_50_charts datasıyla birleştiriyor
