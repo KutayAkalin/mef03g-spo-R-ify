@@ -1,0 +1,6 @@
+ülke idleri playlistURI.csv'de,
+data_extraction.R bunu read edip extract ediyo, meanlerini alıyo top_50_charts.txt olarak kaydediyo
+app.R top_50_charts.txt dosyasını okuyo ordan,
+o database ile shiny interface'de girdiğimiz user playlist id'sini spotifyr'dan çekiyo
+gelen user_playlist datasının meanlerini çıkarıp top_50_charts datasıyla birleştiriyo
+Country select inputuna göre radar chart çiziyor
