@@ -1,6 +1,7 @@
 ülke idleri playlistURI.csv'de,
-data_extraction.R bunu okuyup extract ediyor, meanlerini alıyor top_50_charts.txt olarak kaydediyor
+turkey_spotify_analysis.R bunu okuyup extract ediyor, şarkı özelliklerinin ortalamasını alıyor 
+ve top_50_charts.txt olarak kaydediyor. Ayrıca, sentiment analizinde kullanılması için top_50_playlists.txt adında ikinci bir dosyayı daha kaydediyor.
 app.R top_50_charts.txt dosyasını github linki üzerinden okuyor,
-o database ile shiny interface'de girdiğimiz user playlist id'sini spotifyr'dan çekiyor
-gelen user_playlist datasının meanlerini çıkarıp top_50_charts datasıyla birleştiriyor
-Country select inputuna göre radar chart çiziyor
+o database ile shiny interface'de girdiğimiz user playlist idlerini spotifyr ile API'dan çekiyor.
+Gelen user_playlist datasının ortalamalarını alıp, loudness, tempo ve track duration için normalization yaptıktan sonra top_50_charts datasıyla birleştiriyor
+Ardından radar chart'ı çiziyor.
