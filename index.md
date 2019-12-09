@@ -2,10 +2,10 @@
 
 
 ## Group Members
-  - Anılcan Atik
-  - Dost Karaahmetli
-  - Kutay Akalın
-  - Tunahan Kılıç
+  - [Anılcan Atik](https://github.com/pjournal/mef03-Anilcana)
+  - [Dost Karaahmetli](https://github.com/pjournal/mef03-karaahmetlid)
+  - [Kutay Akalın](https://github.com/pjournal/mef03-KutayAkalin)
+  - [Tunahan Kılıç](https://github.com/pjournal/mef03-tunahankilic)
   
 ---------
 
