@@ -56,31 +56,31 @@ server <- function(input, output) {
     personaKey <- get_playlist_audio_features(input$userName, input$userPL) %>% group_by(key_name) %>%
       summarise(count = n()) %>% filter(count == max(count))
     if (personaKey$key_name == "A") {
-      personaInfo <- read.csv2("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/A.csv")
+      personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/A.csv?raw=true")
     } else if (personaKey$key_name == "A#") {
-      personaInfo <- read.csv2("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/Amj.csv")
+      personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/Amj.csv?raw=true")
     } else if (personaKey$key_name == "B") {
-      personaInfo <- read.csv2("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/B.csv")
+      personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/B.csv?raw=true")
     } else if (personaKey$key_name == "C") {
-      personaInfo <- read.csv2("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/C.csv")
+      personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/C.csv?raw=true")
     } else if (personaKey$key_name == "C#") {
-      personaInfo <- read.csv2("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/Cmj.csv")
+      personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/Cmj.csv?raw=true")
     } else if (personaKey$key_name == "D") {
-      personaInfo <- read.csv2("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/D.csv")
+      personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/D.csv?raw=true")
     } else if (personaKey$key_name == "D#") {
-      personaInfo <- read.csv2("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/Dmj.csv")
+      personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/Dmj.csv?raw=true")
     } else if (personaKey$key_name == "E") {
-      personaInfo <- read.csv2("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/E.csv")
+      personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/E.csv?raw=true")
     } else if (personaKey$key_name == "F") {
-      personaInfo <- read.csv2("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/F.csv")
+      personaInfo <- read.csv2("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/F.csv?raw=true")
     } else if (personaKey$key_name == "F#") {
-      personaInfo <- read.csv2("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/Fmj.csv")
+      personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/Fmj.csv?raw=true")
     } else if (personaKey$key_name == "G") {
-      personaInfo <- read.csv2("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/G.csv")
+      personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/G.csv?raw=true")
     } else if (personaKey$key_name == "G#") {
-      personaInfo <- read.csv2("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/Gmj.csv")
+      personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/Gmj.csv?raw=true")
     } else {
-      personaInfo <- read.csv2("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/Amj.csv")
+      personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/Amj.csv?raw=true")
     }
     as.data.frame(personaInfo)
     
