@@ -396,7 +396,7 @@ kable(head(monthly_sentiment,n=10L)) %>%
 
 ```{r message=FALSE, warning=FALSE,fig.height = 10, fig.width = 12}
 
-monthly_sentiment<-monthly_sentiment%>% mutate(Perc_Num=as.double( strsplit(Percent_in_Year,split = "%")))
+monthly_sentiment<-monthly_sentiment%>% mutate(Perc_Num=as.double( strsplit(Percent_in_Month,split = "%")))
 
 ggplot(monthly_sentiment,aes(Year_Month,Perc_Num,group=Sentiment,color=Sentiment)) + geom_point() + geom_line(aes( color=Sentiment)) +  labs(title = "Monthly Sentiment Change", x = "Months", y = "Percantage") +
   theme(title = element_text(size = 16, face = "bold"), plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90), 
@@ -405,7 +405,48 @@ ggplot(monthly_sentiment,aes(Year_Month,Perc_Num,group=Sentiment,color=Sentiment
 
 ```
  
-### 6.3.3. Sentiment Bar Graph of All Tracks
+ ### 6.3.3. Sentiment Change in Years 
+
+Spotify offer us Turkey's playlists in 1980, 1990, 2000, 2010 decades. These playlists includes just 50 songs per decade. Thus, we use sentiment percantage again for compare decades and last 3 years data.
+
+```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
+
+df80<-get_playlist_audio_features("spotifycharts","37i9dQZF1DX4io1yPyoLtv") %>% mutate(Year="1980") 
+df90<-get_playlist_audio_features("spotifycharts","37i9dQZF1DXb7MJRXLczzR") %>% mutate(Year="1990") 
+df00<-get_playlist_audio_features("spotifycharts","37i9dQZF1DWYteTcNVQZNq") %>% mutate(Year="2000") 
+df10<-get_playlist_audio_features("spotifycharts","37i9dQZF1DXaE9T4Nls8eC") %>% mutate(Year="2010") 
+
+past_track_data <- rbind(df80, df90, df00, df10)
+glimpse(past_track_data)
+
+Sentiment=c()
+for (i in 1:nrow(past_track_data)){
+    Sentiment[i]=classify_track_sentiment(valence=past_track_data$valence[i],energy=past_track_data$energy[i])
+
+}
+
+past_track_data<-cbind(past_track_data,Sentiment) 
+
+past_track_data_sentiment<-past_track_data %>% group_by(Year,Sentiment) %>% summarise(Count= n())
+
+df1c<-top_200 %>% mutate(Year = format(Date,"%Y"))
+sent_count_yearly<-df1c %>% left_join(select(top_200_audio_features, "Sentiment","id"), by = "id") %>% group_by(Year,Sentiment) %>% summarise(Count= n())
+
+
+yearly_change<- rbind(past_track_data_sentiment,sent_count_yearly) %>% group_by(Year) %>% mutate (Year_Sum=sum(Count)) %>% ungroup() %>% mutate(Percent_in_Year = percent(Count/Year_Sum))
+
+kable(yearly_change) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+yearly_change<-yearly_change%>% mutate(Perc_Num=as.double( strsplit(Percent_in_Year,split = "%")))
+
+ggplot(yearly_change,aes(Year,Perc_Num,group=Sentiment,color=Sentiment)) + geom_point() + geom_line(aes( color=Sentiment)) +  labs(title = "Yearly Sentiment Change", x = "Years", y = "Percantage") +
+  theme(title = element_text(size = 16, face = "bold"), plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90), 
+        axis.title.x = element_text(size = 14, face = "bold"), 
+        axis.title.y = element_text(size = 14, face = "bold"), legend.title = element_blank()) 
+```
+ 
+### 6.3.4. Sentiment Bar Graph of All Tracks
  
 Sentiment count of all unique songs.
  
@@ -422,7 +463,7 @@ ggplot(sent_count, aes(x=Sentiment, y=n, fill=Sentiment)) +
 ```
 
  
-### 6.3.4. Sentiment Gradient Chart
+### 6.3.5. Sentiment Gradient Chart
  
 Finaly we mapped the all Top 200 tracks by their sentiment and displayed in gradient chart.
  
