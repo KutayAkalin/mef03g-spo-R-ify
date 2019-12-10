@@ -387,6 +387,13 @@ ggplot(monthly_sentiment,aes(Year_Month,Perc_Num,group=Sentiment,color=Sentiment
 
 Spotify offer us Turkey's playlists in 1980, 1990, 2000, 2010 decades. These playlists includes just 50 songs per decade. Thus, we use sentiment percantage again for compare decades and last 3 years data.
 
+#### Key Takeaways: 
+* As a genuinely restless nation, we seem to have an allergy against "Chill/Peaceful" music.
+* We can see climbing of "Turbulent/Angry" music after 1990's. The climb is even more steep with 2010's.
+* While more "Happy/Joyful" music is listened to after 1980's, we can see a significant decline after 2010's.
+
+Can these alterations be explained by the value shift in our society and the "Urban Anomie Theory"?  
+
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
 df80<-get_playlist_audio_features("spotifycharts","37i9dQZF1DX4io1yPyoLtv") %>% mutate(Year="1980") 
 df90<-get_playlist_audio_features("spotifycharts","37i9dQZF1DXb7MJRXLczzR") %>% mutate(Year="1990") 
