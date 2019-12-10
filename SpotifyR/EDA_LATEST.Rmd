@@ -1,5 +1,5 @@
 ---
-title: "Spotify Project: Exploratory Data Analysis" 
+title: "Spotify Project: Final Analysis and Presentation" 
 
 author: 
     - _Anılcan_ _Atik_
@@ -7,7 +7,7 @@ author:
     - _Kutay_ _Akalın_
     - _Tunahan_ _Kılıç_
       
-date: "November 28th, 2019"
+date: "December 11th, 2019"
 output: 
   html_document:
     toc: true
@@ -38,7 +38,6 @@ library(ggalt)
 library(plotly)
 library(scales)
 library(kableExtra)
-
 options(max.print=1000000)
 ```
 
@@ -50,6 +49,8 @@ access_token <- get_spotify_access_token()
 When connection is made successfully, we can access lots of difrent type data such as aritst, albums, tracks, user profile etc. Here is the Spotify API [References](https://developer.spotify.com/documentation/web-api/reference/). In our project, we will usually use playlist, artist and track data.
 
 ## 3. Gathering Turkey, USA, Japan and Brazil Top 50 Playlists
+
+Our goal here is to download the Top 50 Playlists prepared by Spotify for countries in order to perform analysis. We put together these lists to compare musical differences between countries.
 ```{r message=FALSE, warning=FALSE}
 #Get Turkey Top 50
 turkey_top_50_id="37i9dQZEVXbIVYVBNw9D5K"
@@ -110,7 +111,6 @@ combined_lists<-cbind(combined_lists,track_sentiment)
 #Adding Artist Column to Combined Music List
 track_audio_combined <- combined_lists %>% 
   select(track.name,track.id,track.artists,track.album.release_date,track.popularity,danceability:tempo,track_sentiment,track.duration_ms)
-
 kable(head(track_audio_combined)) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>% scroll_box(width = "100%", height = "400px")
 artist_names = c()
@@ -127,15 +127,15 @@ glimpse(combined_lists)
 
 ### 5.1. Country Playlists by Key
 
+The number of common songs in the 4 lists we have is few. In this respect, the musical notes used mainly in songs on a country basis can be obtained from the plot.
+
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
 country_by_key <- combined_lists%>%
   select(playlist_name, key_name, track.name)%>%
   group_by(playlist_name) %>% count(key_name, sort = TRUE)
   
-
 kable(country_by_key) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-
 ggplot(country_by_key, aes(x = key_name, y = n, fill = playlist_name)) + 
   geom_bar(stat = "identity") +
   labs(title = "Playlists by Key Name", x = "Key Name", y = "Total Number of Keys") + 
@@ -145,15 +145,15 @@ ggplot(country_by_key, aes(x = key_name, y = n, fill = playlist_name)) +
 ```
 
 ### 5.2. Common Songs in Playlists
+
+It is possible that there are common songs that could affect our analysis using the music charts of the 4 countries we have. The following table and plot show the songs that are common in the charts and how many of these songs are on the playlists. 
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
 common_songs <- combined_lists %>% group_by(track.name, artist_names) %>%
   summarise(n_songs = n()) %>% 
   filter(n_songs >= 2) %>% 
   arrange(desc(n_songs))
-
 kable(common_songs) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-
 ggplot(common_songs, aes(x = reorder(track.name, n_songs), y = n_songs, fill = artist_names)) + 
   geom_bar(stat = "identity") + 
   labs(title = "Common Songs on Playlists", x = "Song Name", y = "Number of Songs") + 
@@ -165,6 +165,8 @@ ggplot(common_songs, aes(x = reorder(track.name, n_songs), y = n_songs, fill = a
 
 
 ### 5.3 .Danceability Density of Playlists
+
+Danceability shows us how fun and full of energy a song is. So if we can plot the distribution of danceability by country, we can see which country's playlist is more fun and full of energy. But we need to wait a little bit for the following analysis to detect the emotions and feelings that the songs reflect.
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
 ggplot(combined_lists, aes(x = danceability, fill = playlist_name)) + 
   geom_density(alpha = 0.7, color = NA)+
@@ -179,6 +181,8 @@ ggplot(combined_lists, aes(x = danceability, fill = playlist_name)) +
 
 
 ### 5.4. Energy and Valence Range of Playlists
+
+In the steps above, we added a column of sentiment to the songs. We used energy and valence values to do this. The following chart shows the range of energy and valence values according to the country  playlists.
 ```{r message=FALSE, warning=FALSE}
 playlist_feature_range <- combined_lists %>%
   group_by(playlist_name)%>%
@@ -186,14 +190,14 @@ playlist_feature_range <- combined_lists %>%
   mutate(min_energy=min(energy), min_valence = min(valence))%>%
   select(playlist_name, min_energy, max_energy, min_valence, max_valence)%>%
   unique()
-
-
 kable(playlist_feature_range) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
 
 ### 5.4.1. Energy and Valence Range of Playlists with Dumbbell Plot
+
+The following chart is created with plotly, so you can move your cursor over the chart to see the maximum and minimum values.
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12,fig.align="center"}
 energy_range_plot <- plot_ly(playlist_feature_range, color = I("gray80"),  
                 hoverinfo = 'text') %>%
@@ -213,6 +217,8 @@ ggplotly(energy_range_plot)
 
 
 ### 5.5. Excitement of Playlists
+
+While researching for Spotify analysis, we came across a beautiful analysis on the [link](https://towardsdatascience.com/is-my-spotify-music-boring-an-analysis-involving-music-data-and-machine-learning-47550ae931de). We have updated the formula used in this analysis to suit our own purpose. Here, we imagine what kind of music will be fun to hear when we go to a party or a festival. Values such as energy, danceability, tempo and loudness have a great impact on the energy and happiness of a song. We add the valence value that we will use in the emotion analysis of the songs to this group and use the following formula to find the average excitement of playlists.
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
 excitement_of_playlist <- combined_lists %>% group_by(playlist_name) %>% 
   select(playlist_name, track.name, valence, energy, loudness, danceability, tempo) %>% 
@@ -229,12 +235,12 @@ ggplot(excitement_of_playlist, aes(x = excitement, fill = playlist_name, color =
 
 
 ### 5.6. Mean Excitement of Playlists
+
+The plot below shows the mean excitement of the playlists by country. Brazil's playlist is noticeably exciting and entertaining, with Japan in second place out of three other countries whose averages are close to each other.
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
 excitement_mean <- excitement_of_playlist %>% group_by(playlist_name) %>% select(excitement_mean) %>% unique()
-
 kable(excitement_mean) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-
 ggplot(excitement_mean, aes(x = reorder(playlist_name, excitement_mean), y = excitement_mean, fill = playlist_name)) + 
   geom_bar(stat ="identity") + 
   labs(title = "Excitement Comparison of Playlists", x = "Country Playlist Names", y = "Means of Excitement", fill = "Country Charts", 
@@ -247,23 +253,23 @@ ggplot(excitement_mean, aes(x = reorder(playlist_name, excitement_mean), y = exc
 
 
 
-### 5.7. Sentiment Analysis of Country Playlists with Gradient Chart
+### 5.7. Sentiment Analysis of Country Playlists
+
+We create the a table by selecting energy, valence and sentiment columns for each country.
 ```{r message=FALSE, warning=FALSE}
 sentiment_by_countries <- combined_lists %>% group_by(playlist_name) %>% 
   select(playlist_name, track.name, artist_names, valence, energy, track_sentiment)
-
-
 kable(head(sentiment_by_countries,n=15L)) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
-### 5.7.1. Group of sentiment count by each contry
+### 5.7.1. Sentiment Analysis of Country Playlists with Gradient Chart
+
+The following table shows the sentiment intensity of the songs in the playlists, grouped by country. The analysis shows that 43 songs in the Brazilian list are in the Happy/Joyful sentiment class. In other lists, although the Happy/Joyful is superior, the Turbulent/Angry appears to be in close numbers. However, the analysis shows that the lists for these four countries are in the Happy/Joyful sentiment class.
 
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
-
 kable(sentiment_by_countries %>% count(track_sentiment, sort = TRUE)) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-
 ggplot(sentiment_by_countries,aes(x = valence, y = energy, color = track_sentiment)) + geom_point() +
   labs(color = "", title = "Sentiment Analysis by Each Country") +
   theme(title = element_text(size = 16, face = "bold"), plot.title = element_text(hjust = 0.5), 
@@ -290,7 +296,6 @@ We obtained Turkey Top 200 daily playlist data between January 2017 and November
 
 ```{r message=FALSE, warning=FALSE}
 topturkey200<-readRDS(url("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/turkeytop200.rds?raw=true"))
-
 glimpse(topturkey200)
 ```
 
@@ -301,12 +306,8 @@ Firstly, we wanted to look at monthly total stream change. In the graph below, w
 ```{r message=FALSE, warning=FALSE, fig.height = 8, fig.width = 10}
 #First cal
 #topturkey200 %>% group_by(Artist)%>% summarise(Total_number=n()) %>% arrange(desc(Total_number))
-
 change<-topturkey200 %>% mutate(Year_Month = format(Date,"%Y/%m")) %>% group_by(Year_Month) %>% summarise(Total_Stream=sum(as.numeric(Streams))) 
-
-
 ggplot(change, aes(x = Year_Month,y=Total_Stream,group=1)) + geom_point() + geom_smooth() + theme(axis.text.x = element_text(angle = 90),title = element_text(size = 16, face = "bold"), plot.title = element_text(hjust = 0.5)) + labs(x = "Month", y = "Total Streams",title = "Total Stream Change") + scale_y_continuous(labels = comma)
-
 ```
 
 ### 6.2. Most Streamed 20 Tracks
@@ -314,10 +315,7 @@ ggplot(change, aes(x = Year_Month,y=Total_Stream,group=1)) + geom_point() + geom
 If we curious about which songs streamed most between 2017 and 2019 so far, Ezhel - Geceler is the answer. First 20 most streamed songs are displayed in the table below.
 
 ```{r message=FALSE, warning=FALSE}
-
 rank<-topturkey200 %>% group_by(Artist,Track.Name) %>% summarise(Total_Stream=sum(as.numeric(Streams))) %>% arrange(desc(Total_Stream))
-
-
 kable(head(rank,n=20L)) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
@@ -328,20 +326,15 @@ kable(head(rank,n=20L)) %>%
 For sentiment analysis, we need to extract unique songs in data frame. So that, we can determine the sentiments of each tracks which can entry the top 200 songs in sometime. After this process, we extract the Spotify ID's of tracks on a new column for further analysis.
 
 ```{r message=FALSE, warning=FALSE}
-
 top_200<-topturkey200 %>% mutate(id=substring(topturkey200$URL,32)) 
-
 top_200_unique<-top_200[!duplicated(top_200[,c('id')]),]
-
 glimpse(top_200_unique)
 ```
  
 With track ID's, we obtanied audio features of this songs using Spotify Web API and "spotifyr" R package. To increase process speed, we upload the RDS data in our github repository and read it from there.
  
 ```{r message=FALSE, warning=FALSE}
-
 Id_list=top_200$id
-
 #Tracks feautres obtaining code is below. Because of the process time data frame downloaded from github repository.
 #a<-unique(Id_list)
 #tracks_features=get_track_audio_features(a[1])
@@ -351,30 +344,22 @@ Id_list=top_200$id
 #tracks_features<-tracks_features%>%slice(-1) 
  
 tracks_features<-readRDS(url("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/top200_tracks_features.rds?raw=true"))
-
-
 glimpse(tracks_features)
-
 ```
  
  
 After we prepared 2 data frame, we joined them in to one data frame. Than, we add a column in our new data frame using our sentiment function.
  
 ```{r message=FALSE, warning=FALSE}
-
 top_200_audio_features <- inner_join(top_200_unique,tracks_features,by="id")
-
 Sentiment=c()
 for (i in 1:nrow(top_200_audio_features)){
   Sentiment[i]=classify_track_sentiment(valence=top_200_audio_features$valence[i],energy=top_200_audio_features$energy[i])
 }
-
 top_200_audio_features<-cbind(top_200_audio_features,Sentiment)
-
 glimpse(top_200_audio_features)
 kable(head(top_200_audio_features,n=10L)) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>% scroll_box(width = "100%", height = "400px")
-
 ```
 
 ### 6.3.2. Sentiment Change in Months
@@ -382,27 +367,20 @@ kable(head(top_200_audio_features,n=10L)) %>%
 For proper sentiment analyse, we calculate the percantages of sentiments in every month. With percantages, we can compare the users emotional preferences in months.
  
 ```{r message=FALSE, warning=FALSE}
-
 df1a<-top_200 %>% mutate(Year_Month = format(Date,"%Y/%m"))
-
 df1b<-df1a %>% left_join(select(top_200_audio_features, "Sentiment","id"), by = "id")
-
 monthly_sentiment<-df1b %>% group_by(Year_Month,Sentiment) %>% summarise(Count_Sentiment = n()) %>% ungroup() %>% group_by(Year_Month) %>% mutate (Month_Sum=sum(Count_Sentiment)) %>% ungroup() %>% mutate(Percent_in_Month = percent(Count_Sentiment/Month_Sum))
-
 glimpse(monthly_sentiment)
 kable(head(monthly_sentiment,n=10L)) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
 ```{r message=FALSE, warning=FALSE,fig.height = 10, fig.width = 12}
-
 monthly_sentiment<-monthly_sentiment%>% mutate(Perc_Num=as.double( strsplit(Percent_in_Month,split = "%")))
-
 ggplot(monthly_sentiment,aes(Year_Month,Perc_Num,group=Sentiment,color=Sentiment)) + geom_point() + geom_line(aes( color=Sentiment)) +  labs(title = "Monthly Sentiment Change", x = "Months", y = "Percantage") +
   theme(title = element_text(size = 16, face = "bold"), plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90), 
         axis.title.x = element_text(size = 14, face = "bold"), 
         axis.title.y = element_text(size = 14, face = "bold"), legend.title = element_blank()) 
-
 ```
  
  ### 6.3.3. Sentiment Change in Years 
@@ -410,36 +388,24 @@ ggplot(monthly_sentiment,aes(Year_Month,Perc_Num,group=Sentiment,color=Sentiment
 Spotify offer us Turkey's playlists in 1980, 1990, 2000, 2010 decades. These playlists includes just 50 songs per decade. Thus, we use sentiment percantage again for compare decades and last 3 years data.
 
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
-
 df80<-get_playlist_audio_features("spotifycharts","37i9dQZF1DX4io1yPyoLtv") %>% mutate(Year="1980") 
 df90<-get_playlist_audio_features("spotifycharts","37i9dQZF1DXb7MJRXLczzR") %>% mutate(Year="1990") 
 df00<-get_playlist_audio_features("spotifycharts","37i9dQZF1DWYteTcNVQZNq") %>% mutate(Year="2000") 
 df10<-get_playlist_audio_features("spotifycharts","37i9dQZF1DXaE9T4Nls8eC") %>% mutate(Year="2010") 
-
 past_track_data <- rbind(df80, df90, df00, df10)
 glimpse(past_track_data)
-
 Sentiment=c()
 for (i in 1:nrow(past_track_data)){
     Sentiment[i]=classify_track_sentiment(valence=past_track_data$valence[i],energy=past_track_data$energy[i])
-
 }
-
 past_track_data<-cbind(past_track_data,Sentiment) 
-
 past_track_data_sentiment<-past_track_data %>% group_by(Year,Sentiment) %>% summarise(Count= n())
-
 df1c<-top_200 %>% mutate(Year = format(Date,"%Y"))
 sent_count_yearly<-df1c %>% left_join(select(top_200_audio_features, "Sentiment","id"), by = "id") %>% group_by(Year,Sentiment) %>% summarise(Count= n())
-
-
 yearly_change<- rbind(past_track_data_sentiment,sent_count_yearly) %>% group_by(Year) %>% mutate (Year_Sum=sum(Count)) %>% ungroup() %>% mutate(Percent_in_Year = percent(Count/Year_Sum))
-
 kable(yearly_change) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-
 yearly_change<-yearly_change%>% mutate(Perc_Num=as.double( strsplit(Percent_in_Year,split = "%")))
-
 ggplot(yearly_change,aes(Year,Perc_Num,group=Sentiment,color=Sentiment)) + geom_point() + geom_line(aes( color=Sentiment)) +  labs(title = "Yearly Sentiment Change", x = "Years", y = "Percantage") +
   theme(title = element_text(size = 16, face = "bold"), plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90), 
         axis.title.x = element_text(size = 14, face = "bold"), 
@@ -451,9 +417,7 @@ ggplot(yearly_change,aes(Year,Perc_Num,group=Sentiment,color=Sentiment)) + geom_
 Sentiment count of all unique songs between 2017 nad 2019.
  
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
-
 sent_count <- top_200_audio_features %>% group_by(Sentiment) %>% count()
-
 ggplot(sent_count, aes(x=Sentiment, y=n, fill=Sentiment)) +
   geom_bar(stat="identity") + 
   labs(title = "Sentiment Count", x = "Sentiment Distribution", y = "Count of Sentiments") +
@@ -468,8 +432,6 @@ ggplot(sent_count, aes(x=Sentiment, y=n, fill=Sentiment)) +
 Finaly we mapped the all Top 200 tracks by their sentiment and displayed in gradient chart.
  
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
-
-
 ggplot(top_200_audio_features,aes(x = valence, y = energy, color = Sentiment)) + geom_point() +
   labs(color = "", title = "Sentiment Analysis of Turkey Top 200 Chart Between 2017 and 2019") +
     theme(title = element_text(size = 16, face = "bold"), plot.title = element_text(hjust = 0.5), 
