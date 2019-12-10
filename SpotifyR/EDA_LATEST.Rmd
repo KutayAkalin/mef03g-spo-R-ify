@@ -448,7 +448,7 @@ ggplot(yearly_change,aes(Year,Perc_Num,group=Sentiment,color=Sentiment)) + geom_
  
 ### 6.3.4. Sentiment Bar Graph of All Tracks
  
-Sentiment count of all unique songs.
+Sentiment count of all unique songs between 2017 nad 2019.
  
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
 
