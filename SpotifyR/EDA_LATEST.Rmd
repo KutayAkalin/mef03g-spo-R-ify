@@ -387,7 +387,7 @@ df1a<-top_200 %>% mutate(Year_Month = format(Date,"%Y/%m"))
 
 df1b<-df1a %>% left_join(select(top_200_audio_features, "Sentiment","id"), by = "id")
 
-monthly_sentiment<-df1b %>% group_by(Year_Month,Sentiment) %>% summarise(Count_Sentiment = n()) %>% ungroup() %>% group_by(Year_Month) %>% mutate (Month_Sum=sum(Count_Sentiment)) %>% ungroup() %>% mutate(Percent_in_Year = percent(Count_Sentiment/Month_Sum))
+monthly_sentiment<-df1b %>% group_by(Year_Month,Sentiment) %>% summarise(Count_Sentiment = n()) %>% ungroup() %>% group_by(Year_Month) %>% mutate (Month_Sum=sum(Count_Sentiment)) %>% ungroup() %>% mutate(Percent_in_Month = percent(Count_Sentiment/Month_Sum))
 
 glimpse(monthly_sentiment)
 kable(head(monthly_sentiment,n=10L)) %>%
