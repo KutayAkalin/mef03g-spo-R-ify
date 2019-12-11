@@ -28,5 +28,8 @@
  
 ### Exploratory Data Analysis
   [December 1, 2019](https://pjournal.github.io/mef03g-spo-R-ify/Exploratory_Data_Analysis_Sporify.html)
+
+### Final Report
+  [December 11, 2019](https://pjournal.github.io/mef03g-spo-R-ify/SpotifyR/EDA_Final_Report.html)
   
 ---------------  
