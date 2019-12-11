@@ -2,10 +2,10 @@
 title: "Spotify Project: Final Analysis and Presentation" 
 
 author: 
-    - _Anılcan_ _Atik_
-    - _Dost_ _Karaahmetli_
-    - _Kutay_ _Akalın_
-    - _Tunahan_ _Kılıç_
+    - "[_Anılcan_ _Atik_](https://github.com/Anilcana)"
+    - "[_Dost_ _Karaahmetli_](https://github.com/karaahmetlid)"
+    - "[_Kutay_ _Akalın_](https://github.com/KutayAkalin)"
+    - "[_Tunahan_ _Kılıç_](https://github.com/tunahankilic)"
       
 date: "December 11th, 2019"
 output: 
@@ -27,6 +27,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 We analyzed the sentiments of current Turkey, USA, Brazil, Japan Top 50 playlists in Spotify and compared them. After that we analyzed the sentiment distribution change in daily Turkey Top 200 playlists between 2017 and 2019 so far.
 
+* In the analysis of the keys performed, it is observed that the most used key in the total of countries is the key G, while the least used key is the key D#. (Chapter 5.1)
+* According to the excitement formula we created, the average highest excitement score of playlist belongs to Brazil and the average lowest excitement score of playlist belongs to the America playlist. (Chapter 5.6)
+* According to the sentiment analysis we have done, the Brazil playlisyt has overwhelmingly Happy/Joyful sentiment intensity. Although we cannot mention this numerical superiority for other playlists, the intensity of Happy/Joyful feeling appears to be superior in the lists of Turkey, Japan and America as well. (Chapter 5.7.1)
 * In Turkey Top 200 data analysis (Chapter 6.3.2), we see that in June 2016, Turbulent/Angry songs have more percantange than Happy/Joyful songs. 
 * As a genuinely restless nation, we seem to have an allergy against “Chill/Peaceful” music. (Chapter 6.3.3)
 * We can see climbing of “Turbulent/Angry” music after 1990’s. The climb is even more steep with 2010’s. (Chapter 6.3.3)
@@ -139,7 +142,7 @@ glimpse(combined_lists)
 
 ### 5.1. Country Playlists by Key
 
-The number of common songs in the 4 lists we have is few. In this respect, the musical notes used mainly in songs on a country basis can be obtained from the plot.
+The number of common songs in the 4 lists we have is few **(Analysis 5.2)**. In this respect, the musical keys used mainly in songs on a country basis can be obtained from the plot.
 
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
 country_by_key <- combined_lists%>%
@@ -277,7 +280,7 @@ kable(head(sentiment_by_countries,n=15L)) %>%
 
 ### 5.7.1. Sentiment Analysis of Country Playlists with Gradient Chart
 
-The following table shows the sentiment intensity of the songs in the playlists, grouped by country. The analysis shows that 43 songs in the Brazilian list are in the Happy/Joyful sentiment class. In other lists, although the Happy/Joyful is superior, the Turbulent/Angry appears to be in close numbers. However, the analysis shows that the lists for these four countries are in the Happy/Joyful sentiment class.
+The following table shows the sentiment intensity of the songs in the playlists, grouped by country. The analysis shows that Brazilian playlist is in the Happy/Joyful sentiment class. In other playlists, although the Happy/Joyful is superior, the Turbulent/Angry appears to be in close numbers.
 
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
 kable(sentiment_by_countries %>% count(track_sentiment, sort = TRUE)) %>%
@@ -463,3 +466,21 @@ ggplot(top_200_audio_features,aes(x = valence, y = energy, color = Sentiment)) +
   geom_segment(aes(x = 0.5, y = 0, xend = 0.5, yend = 1)) +
   geom_segment(aes(x = 0, y = 1, xend = 1, yend = 1)) 
 ```
+
+## 7. Shiny Apps
+
+### 7.1. Audio Features Analysis by Radar Chart
+
+Click on the [link](https://dost-karaahmetli.shinyapps.io/Radar/) to use our app, which analyzes and compares the audio features of music charts created by Spotify or belonging to two different Spotify users as a radar chart.
+
+### 7.2. Musical Horoscope
+
+Click on the [link](https://dost-karaahmetli.shinyapps.io/MusicalHoroscope/) to use our app, which makes predictions on personality type based on the user playlist, using the audio features and key characteristic of the Spotify user's playlist.
+
+
+## 8. References
+
+8.1. https://www.rcharlie.com/spotifyr/
+8.2. https://github.com/charlie86/spotifyr
+8.3. https://github.com/charlie86/sentify
+
