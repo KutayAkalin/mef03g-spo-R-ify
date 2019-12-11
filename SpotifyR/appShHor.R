@@ -2,14 +2,10 @@ library(spotifyr)
 library(shiny)
 library(tidyverse)
 library(dplyr)
-library(readr)
-library(reprex)
 library(tidyr)
 library(scales)
-library(DT)
-library(plotly)
 library(treemap)
-library(knitr)
+
 
 
 ui <- fluidPage(
@@ -17,8 +13,8 @@ ui <- fluidPage(
   textInput("userName", "Please Enter Your Username", value = "spotifycharts"),
   textInput("userPL", "Please Enter Your Playlist Code", value = "7mJKc32vPRWxI8dg8awSus"),
   tabsetPanel(
-    tabPanel(title = " Playlist Key Attributes", plotOutput("userPlot", width = 700, height = 700)),
-    tabPanel(title = " Playlist Key Characteristics", plotOutput("userTree", width = 900, height = 600)),
+    tabPanel(title = " Playlist Key Attributes", plotOutput("userPlot", width = 900, height = 700)),
+    tabPanel(title = " Playlist Key Characteristics", plotOutput("userTree", width = 1000, height = 700)),
     tabPanel(title = " Personality Type", h3("What is your personality type?"), br(),  
 p("The key signatures of music are kind of like the signs of the zodiac."),  
 "If you take all the music in a given key, you’ll discover certain characteristics — 
@@ -42,15 +38,20 @@ server <- function(input, output) {
     
     ggplot(uSer, aes(x = rownames(uSer), y = ., fill = rownames(uSer))) + 
       geom_col() + 
-      coord_polar()
+      coord_polar() + 
+      labs(x = paste(toString(input$userName), "Playlist Attributes"), title = "Playlist Average Attributes") + 
+      theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5)) +
+      theme(axis.title.x = element_text(size = 14, face = "bold")) +
+      theme(legend.title = element_blank()) +
+      theme(plot.background = element_rect(fill = "grey"))
   })
   output$userTree <- renderPlot({
     get_playlist_audio_features(input$userName, input$userPL) %>% group_by(key_name) %>%
       summarise(count = n()) %>%
       treemap(index = "key_name", vSize = "count", type = "index", 
-              palette = "Set1", 
-              title = paste(toString(input$userName), " Playlist Key Characteristics"), 
-              fontsize.title=16) 
+              palette = "Set1", inflate.labels = TRUE, 
+              title = paste(toString(input$userName), "Playlist Key Characteristics"), 
+              fontsize.title = 20) 
   })
   output$userPersona <- renderTable ({
     personaKey <- get_playlist_audio_features(input$userName, input$userPL) %>% group_by(key_name) %>%
@@ -83,8 +84,9 @@ server <- function(input, output) {
       personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/Amj.csv?raw=true")
     }
     as.data.frame(personaInfo)
-    
+
   })
+
 }
 
 
