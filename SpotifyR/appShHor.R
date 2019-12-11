@@ -6,7 +6,7 @@ library(tidyr)
 library(scales)
 library(treemap)
 
-
+Sys.setlocale('LC_ALL','C')
 
 ui <- fluidPage(
   titlePanel("Musical Horoscpoe"),
