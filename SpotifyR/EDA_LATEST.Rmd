@@ -27,7 +27,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 We analyzed the sentiments of current Turkey, USA, Brazil, Japan Top 50 playlists in Spotify and compared them. After that we analyzed the sentiment change in daily Turkey Top 200 playlists between 2017 and 2019 so far.
 
-* In Turkey Top 200 data analysis (Chapter 6.3.2), we see that in June 2016, Turbulent/Angry songs have more percantange than Happy/Joyful songs. In yearly anlysis (Chapter 6.3.3), Happy/Joyful songs have more percantage than other senitments until 2018 and decreasing since 1990's. Beside that, Turbulent/Angry songs percantage increasing since 1990's.
+* In Turkey Top 200 data analysis (Chapter 6.3.2), we see that in June 2016, Turbulent/Angry songs have more percantange than Happy/Joyful songs. 
+* As a genuinely restless nation, we seem to have an allergy against “Chill/Peaceful” music. (Chapter 6.3.3)
+* We can see climbing of “Turbulent/Angry” music after 1990’s. The climb is even more steep with 2010’s. (Chapter 6.3.3)
+* While more “Happy/Joyful” music is listened to after 1980’s, we can see a significant decline after 2010’s. (Chapter 6.3.3)
+* Can these alterations be explained by the value shift in our society and the “Urban Anomie Theory”?
 
 
 ## 1. Data Explanation
