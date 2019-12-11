@@ -22,6 +22,14 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+## Key Takeaways
+
+We analyzed the sentiments of current Turkey, USA, Brazil, Japan Top 50 playlists in Spotify and compared them. After that we analyzed the sentiment change in daily Turkey Top 200 playlists between 2017 and 2019 so far.
+
+* In Turkey Top 200 data analysis (Chapter 6.3.2), we see that in June 2016, Turbulent/Angry songs have more percantange than Happy/Joyful songs. In yearly anlysis (Chapter 6.3.3), Happy/Joyful songs have more percantage than other senitments until 2018 and decreasing since 1990's. Beside that, Turbulent/Angry songs percantage increasing since 1990's.
+
+
 ## 1. Data Explanation
 
 Our data obtained directly from Spotify Web API. For API connection, we created “Client ID” and “Client Secret” from [Spotify for Developers Website](https://developer.spotify.com/documentation/web-api/). For this purpose, **"spotifyr"** package used for making connection.
@@ -54,7 +62,7 @@ Our goal here is to download the Top 50 Playlists prepared by Spotify for countr
 ```{r message=FALSE, warning=FALSE}
 #Get Turkey Top 50
 turkey_top_50_id="37i9dQZEVXbIVYVBNw9D5K"
-turkey_top_50_audio_features <- get_playlist_audio_features("spotifycharts", turkey_top_50_id)
+turkey_top_50_audio_features <- get_playlist_audio_features("spotifycharts", turkey_top_50_id) %>% slice(-1)
 #Get USA Top 50
 usa_top_50_id = "37i9dQZEVXbLRQDuF5jeBp"
 usa_top_50_audio_features <- get_playlist_audio_features("spotifycharts", usa_top_50_id)
@@ -101,7 +109,7 @@ classify_track_sentiment <- function(valence, energy) {
   }
 }
 track_sentiment = c()
-for (i in 1:200){
+for (i in 1:199){
   
   track_sentiment[i] = classify_track_sentiment(combined_lists[[15]][[i]], combined_lists[[7]][[i]])
   
@@ -114,7 +122,7 @@ track_audio_combined <- combined_lists %>%
 kable(head(track_audio_combined)) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>% scroll_box(width = "100%", height = "400px")
 artist_names = c()
-for (i in 1:200){
+for (i in 1:199){
   
   artist_names[i] <- track_audio_combined[[3]][[i]][[3]]
   
@@ -364,7 +372,7 @@ kable(head(top_200_audio_features,n=10L)) %>%
 
 ### 6.3.2. Sentiment Change in Months
  
-For proper sentiment analyse, we calculate the percantages of sentiments in every month. With percantages, we can compare the users emotional preferences in months.
+For proper sentiment analyse, we calculate the percentages of sentiments frequency in every month. With percentages, we can compare the users emotional preferences in months.
  
 ```{r message=FALSE, warning=FALSE}
 df1a<-top_200 %>% mutate(Year_Month = format(Date,"%Y/%m"))
@@ -383,16 +391,10 @@ ggplot(monthly_sentiment,aes(Year_Month,Perc_Num,group=Sentiment,color=Sentiment
         axis.title.y = element_text(size = 14, face = "bold"), legend.title = element_blank()) 
 ```
  
- ### 6.3.3. Sentiment Change in Years 
+### 6.3.3. Sentiment Change in Years 
 
-Spotify offer us Turkey's playlists in 1980, 1990, 2000, 2010 decades. These playlists includes just 50 songs per decade. Thus, we use sentiment percantage again for compare decades and last 3 years data.
-
-#### Key Takeaways: 
-* As a genuinely restless nation, we seem to have an allergy against "Chill/Peaceful" music.
-* We can see climbing of "Turbulent/Angry" music after 1990's. The climb is even more steep with 2010's.
-* While more "Happy/Joyful" music is listened to after 1980's, we can see a significant decline after 2010's.
-
-Can these alterations be explained by the value shift in our society and the "Urban Anomie Theory"?  
+Spotify offer us Turkey's playlists in 1980, 1990, 2000, 2010 decades. These playlists includes just 50 songs per decade. Thus, we use sentiment percentage frequency again for compare decades and last 3 years data.
+ 
 
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
 df80<-get_playlist_audio_features("spotifycharts","37i9dQZF1DX4io1yPyoLtv") %>% mutate(Year="1980") 
@@ -421,7 +423,7 @@ ggplot(yearly_change,aes(Year,Perc_Num,group=Sentiment,color=Sentiment)) + geom_
  
 ### 6.3.4. Sentiment Bar Graph of All Tracks
  
-Sentiment count of all unique songs between 2017 nad 2019.
+Sentiment count of all unique songs between 2017 and 2019.
  
 ```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
 sent_count <- top_200_audio_features %>% group_by(Sentiment) %>% count()
