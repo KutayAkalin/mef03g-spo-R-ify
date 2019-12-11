@@ -483,4 +483,4 @@ Click on the [link](https://dost-karaahmetli.shinyapps.io/MusicalHoroscope/) to 
 8.1. https://www.rcharlie.com/spotifyr/
 8.2. https://github.com/charlie86/spotifyr
 8.3. https://github.com/charlie86/sentify
-
+8.4. https://developer.spotify.com/documentation/web-api/
