@@ -25,7 +25,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Key Takeaways
 
-We analyzed the sentiments of current Turkey, USA, Brazil, Japan Top 50 playlists in Spotify and compared them. After that we analyzed the sentiment change in daily Turkey Top 200 playlists between 2017 and 2019 so far.
+We analyzed the sentiments of current Turkey, USA, Brazil, Japan Top 50 playlists in Spotify and compared them. After that we analyzed the sentiment distribution change in daily Turkey Top 200 playlists between 2017 and 2019 so far.
 
 * In Turkey Top 200 data analysis (Chapter 6.3.2), we see that in June 2016, Turbulent/Angry songs have more percantange than Happy/Joyful songs. 
 * As a genuinely restless nation, we seem to have an allergy against “Chill/Peaceful” music. (Chapter 6.3.3)
