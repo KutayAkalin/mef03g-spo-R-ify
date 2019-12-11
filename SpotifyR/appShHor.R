@@ -73,7 +73,7 @@ server <- function(input, output) {
     } else if (personaKey$key_name == "E") {
       personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/E.csv?raw=true")
     } else if (personaKey$key_name == "F") {
-      personaInfo <- read.csv2("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/F.csv?raw=true")
+      personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/F.csv?raw=true")
     } else if (personaKey$key_name == "F#") {
       personaInfo <- read.csv("https://github.com/pjournal/mef03g-spo-R-ify/blob/master/SpotifyR/Fmj.csv?raw=true")
     } else if (personaKey$key_name == "G") {
