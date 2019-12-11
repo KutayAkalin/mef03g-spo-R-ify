@@ -484,3 +484,8 @@ Click on the [link](https://dost-karaahmetli.shinyapps.io/MusicalHoroscope/) to 
 * https://github.com/charlie86/spotifyr
 * https://github.com/charlie86/sentify
 * https://developer.spotify.com/documentation/web-api/
+* https://www.cbcmusic.ca/posts/11744/the-signature-series
+* https://www.16personalities.com/articles/music-preferences-by-personality-type
+* https://ledgernote.com/blog/interesting/musical-key-characteristics-emotions/
+
+
