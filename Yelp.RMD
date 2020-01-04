@@ -1,0 +1,184 @@
+---
+title: "SpoRify Group BDM Project: Sentiment Analysis with Yelp Dataset" 
+
+author: 
+    - "[_Anılcan_ _Atik_](https://github.com/Anilcana)"
+    - "[_Dost_ _Karaahmetli_](https://github.com/karaahmetlid)"
+    - "[_Kutay_ _Akalın_](https://github.com/KutayAkalin)"
+    - "[_Tunahan_ _Kılıç_](https://github.com/tunahankilic)"
+      
+date: "January 06th, 2020"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: united
+    highlight: zenburn
+    code_folding: "hide"
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE, warning=FALSE,include=FALSE}
+library(httpuv)
+library(spotifyr)
+library(tidyverse)
+library(knitr)
+library(lubridate)
+library(ggalt)
+library(plotly)
+library(scales)
+library(kableExtra)
+library(reshape2)
+library(readxl)
+library(png)
+library(grid)
+library(iotools)
+
+
+library(tm)
+library(wordcloud)
+library(wordcloud2)
+library(tidytext)
+library(data.table)
+library(textdata)
+options(max.print=1000000)
+
+```
+
+
+## Reading Data
+```{r message=FALSE, warning=FALSE,fig.height = 8, fig.width = 10}
+
+business<-fread("D:/BDM/Proje/yelp_academic_dataset_business_restaurants.csv")
+#Bi kısmı sadece
+review <- readRDS("D:/BDM/Proje/7dahil.RDS")
+
+```
+
+
+
+## Most Popular 7 Categories in Vegas
+
+```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
+
+vegas_cat <- business %>% filter(city == "Las Vegas")
+Category = str_split(vegas_cat$categories,",")
+Category = as.data.frame(unlist(Category))
+colnames(Category) = c("Category")
+Category$Category=sapply(Category$Category, str_replace_all,pattern=" ",replacement="")
+
+groups<-Category %>% group_by(Category) %>% summarise(Count = n()) %>% arrange(desc(Count)) %>% slice(1:7)
+
+ggplot(groups, aes(x=Category, y=Count, fill=Category)) +
+  geom_bar(stat="identity")+  labs(title = "Most Popular 7 Categories in Vegas", x = "Category",
+       y = "Count") +
+  theme(title = element_text(size = 16, face = "bold"), 
+        plot.title = element_text(hjust = 0.5),
+        axis.title.x = element_text(size = 14, face = "bold"),
+        axis.title.y = element_text(size = 14, face = "bold"), 
+        legend.title = element_blank()) + scale_y_continuous(labels = comma) +
+  scale_fill_brewer(palette="Dark2")
+
+```
+
+
+## Las Vegas's Most Reviewed Restaurants
+```{r message=FALSE, warning=FALSE, fig.height = 10, fig.width = 12}
+
+vegas<-business %>% filter(city == "Las Vegas" & grepl("Restaurant",categories)
+                           & review_count>300)
+
+vegas1<-vegas %>% select("business_id","name","address","review_count","stars") %>% arrange(desc(review_count))
+
+kable(head(vegas1,n=20L)) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+```
+
+
+
+
+
+## Earl of Sandwich
+## Word Cloud of "Earl of Sandwich" Reviews
+
+  For wordcloud display, we need to do preprocessing on the data. We extracted the words of each reviews and removed the words like popular engish words (stop words), numbers and spaces fof more meaningfull inside about the restaurant. This map give us the key words of restaurant which chose by our customers.
+```{r message=FALSE, warning=FALSE}
+
+earl_w <- review %>% filter(business_id == "DkYS3arLOhA8si5uUEmHOw") %>% unnest_tokens(word, text) %>% select("word")
+
+# Create a corpus 
+earl_w <- Corpus(VectorSource(earl_w))
+
+# Data cleaning for meaningful words
+earl_w<- earl_w %>%  tm_map(removeNumbers) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(stripWhitespace)
+earl_w <- tm_map(earl_w, content_transformer(tolower))
+earl_w <- tm_map(earl_w, removeWords, stopwords("english"))
+earl_w <- tm_map(earl_w, removeWords, c("sandwiches","vegas"))
+
+dtm <- TermDocumentMatrix(earl_w) 
+matrix <- as.matrix(dtm) 
+earl_w <- sort(rowSums(matrix),decreasing=TRUE) 
+df <- data.frame(word = names(earl_w),freq=earl_w)
+set.seed(1234) 
+wordcloud2(data=df, size=1.6, color='random-dark')
+```
+
+
+
+## Sentiment Anlaysis of "Earl of Sandwich" Reviews
+
+  "Tidytext" package was used for sentiment analysis. You can find detail by clicking [here](https://www.tidytextmining.com/). 
+  We calculated the setiments by using "bing" method. In this method, each words of the text colums are extracted and analysed by their sentiment meanings. There will be two different sentiments; positive and negative. After found the sentiments, we decided to give 1 point for each positive word and -1 point for each negative word. Finally, we calculated the overall sentiment points of the reviews.
+
+```{r message=FALSE, warning=FALSE,fig.height = 8, fig.width = 10}
+
+earl_s <- review %>% filter(business_id == "DkYS3arLOhA8si5uUEmHOw") %>%
+  unnest_tokens(word, text) %>%
+  inner_join(get_sentiments("bing"), by = "word")
+
+for (i in (1:nrow(earl_s))){
+    if (earl_s$sentiment[i] == "positive"){
+        earl_s$Sentiment_Point[i] = 1
+        
+    }else{
+        earl_s$Sentiment_Point[i] = -1
+    }
+}
+
+earl_s<-earl_s %>% group_by(review_id) %>%summarise(Sentiment = sum(Sentiment_Point)) %>%
+  left_join(review,by = "review_id") %>% select(1:7)
+glimpse(earl_s)      
+```
+
+
+### Negative 5 Reviews
+```{r message=FALSE, warning=FALSE,fig.height = 8, fig.width = 10}
+
+worst<-earl_s %>% arrange(Sentiment) %>% slice(1:5) %>% select("date","text","Sentiment")
+
+kable(worst) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+```
+
+
+### Positive 5 Reviews
+```{r message=FALSE, warning=FALSE,fig.height = 8, fig.width = 10}
+
+best<-earl_s %>% arrange(desc(Sentiment)) %>% slice(1:5) %>% select("date","text","Sentiment")
+
+kable(best) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+```
+
+
+
+
